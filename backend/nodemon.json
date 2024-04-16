@@ -1,0 +1,5 @@
+{
+  "warch": ["src"],
+  "ext": "js",
+  "exec": "node ./index.js"
+}
