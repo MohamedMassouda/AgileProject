@@ -19,7 +19,26 @@ model User {
   email     String   @unique
   name      String
   password  String
-  role      String   @default("member")
+  role      Role     @relation(fields: [roleId], references: [id])
+  roleId    String
+  events    Event[]  @relation("EventAttendees")
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+}
+
+model Role {
+  id    String @id @default(cuid())
+  name  String @unique
+  users User[]
+}
+
+model Event {
+  id          String   @id @default(cuid())
+  title       String
+  description String
+  date        DateTime
+  location    String
+  attendees   User[]   @relation("EventAttendees")
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 }

@@ -38,3 +38,19 @@ export function debugError(error, message = "Internal server error") {
     return message;
   }
 }
+
+/**
+ * @param {import("express").Request} req
+ * @param {string[]} arg
+ * @returns {string}
+ * */
+export function missingArgsFromReqBody(req, arg) {
+  const missing = [];
+  for (const a of arg) {
+    if (!req.body[a]) {
+      missing.push(a);
+    }
+  }
+
+  return missing.join(", ");
+}

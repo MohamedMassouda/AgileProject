@@ -1,5 +1,5 @@
 import { PrismaClient } from "@prisma/client";
-import { isEmailValid } from "../utils/utils.js";
+import { isEmailValid, missingArgsFromReqBody } from "../utils/utils.js";
 import jwt from "jsonwebtoken";
 import {
   getSecretToken,
@@ -74,7 +74,9 @@ export const UserController = {
     try {
       const decoded = jwt.verify(token, getSecretToken());
 
-      const user = await prisma.user.findUnique({
+      // Replaced role: true with roleId: true
+      // This way I can get the role as a string that contains the name only instead of getting {id: "", name: ""}
+      const userWithRole = await prisma.user.findUnique({
         where: {
           id: decoded.id,
         },
@@ -82,9 +84,25 @@ export const UserController = {
           id: true,
           name: true,
           email: true,
-          role: true,
+          roleId: true,
         },
       });
+
+      const role = await prisma.role.findUnique({
+        where: {
+          id: userWithRole.roleId,
+        },
+        select: {
+          name: true,
+        },
+      });
+
+      const user = {
+        id: userWithRole.id,
+        name: userWithRole.name,
+        email: userWithRole.email,
+        role: role.name,
+      };
 
       res.json(user);
     } catch (error) {
@@ -115,7 +133,7 @@ export const UserController = {
    * @param {string} password
    * @returns {Promise<import("@prisma/client").User>}
    * */
-  async create(name, email, password) {
+  async create(name, email, password, roleName = "member") {
     if (!isEmailValid(email)) {
       throw new Error("Invalid email");
     }
@@ -125,6 +143,11 @@ export const UserController = {
         name,
         email,
         password,
+        role: {
+          connect: {
+            name: roleName,
+          },
+        },
       },
     });
 
@@ -193,8 +216,13 @@ export const UserController = {
    * @returns {Promise<void>}
    * */
   async createUser(req, res) {
-    if (!req.body || !req.body.name || !req.body.email || !req.body.password) {
-      res.status(400).json({ error: "Invalid body" });
+    const missingArgs = missingArgsFromReqBody(req, [
+      "name",
+      "email",
+      "password",
+    ]);
+    if (missingArgs.length > 0) {
+      res.status(400).json({ error: `Missing arguments: ${missingArgs}` });
       return;
     }
 
@@ -240,6 +268,16 @@ export const UserController = {
    * */
   async updateUser(req, res) {
     const { id } = req.params;
+    const missingArgs = missingArgsFromReqBody(req, [
+      "name",
+      "email",
+      "password",
+    ]);
+
+    if (missingArgs.length > 0) {
+      res.status(400).json({ error: `Missing arguments: ${missingArgs}` });
+      return;
+    }
     const { name, email, password } = req.body;
 
     try {
