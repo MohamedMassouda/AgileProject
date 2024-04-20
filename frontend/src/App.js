@@ -1,20 +1,16 @@
-import './App.css';
-import Login from './screens/Login';
-import SignUp from './screens/SignUp';
-import Navbar from './screens/Navbar.jsx';
-
-
+import "./App.css";
+import Navbar from "./screens/Navbar.jsx";
+import { BrowserRouter, Route, Routes } from "react-router-dom";
+import SignUp from "./screens/SignUp.jsx";
 
 function App() {
   return (
-    <div className="App">
-      <header className="App-header">
-                <style>{'body { background-color: #EC296D; }'}</style>
-                <Navbar />
-        <SignUp />
-      </header>
-    </div>
-    
+    <BrowserRouter>
+      <Routes>
+        <Route path="/" element={<Navbar />} />
+        <Route path="/register" element={<SignUp />} />
+      </Routes>
+    </BrowserRouter>
   );
 }
 

@@ -1,11 +1,11 @@
-import React from 'react';
-import './Navbar.css';
+import React from "react";
+import "./Navbar.css";
 
 function Navbar() {
   return (
     <nav className="navbar">
       <div className="video-logo">
-      <img
+        <img
           src="https://horizontech.tn/static/media/logo.3e37e3f2.png"
           alt="Avatar"
           className="rounded-circle shadow-4"
@@ -17,16 +17,16 @@ function Navbar() {
           src="https://qph.cf2.quoracdn.net/main-qimg-e981687f230a245c7e38c00112d3851a"
           alt="Avatar"
           className="rounded-circle shadow-4"
-          style={{ width: "100px" ,}}
+          style={{ width: "100px" }}
         />
-                                 
+
         <img
           src="https://upload.wikimedia.org/wikipedia/commons/thumb/c/ce/Flag_of_Tunisia.svg/langfr-1920px-Flag_of_Tunisia.svg.png"
           alt="Avatar"
           className="rounded-circle shadow-4"
-          style={{ width: "75px" ,marginLeft: "10px"}}
+          style={{ width: "75px", marginLeft: "10px" }}
         />
-        </div>
+      </div>
       <div className="avatar-container">
         <img
           src="https://mdbcdn.b-cdn.net/img/new/avatars/1.webp"
@@ -48,3 +48,4 @@ function Navbar() {
 }
 
 export default Navbar;
+

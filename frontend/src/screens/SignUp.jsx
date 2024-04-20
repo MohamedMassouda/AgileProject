@@ -1,17 +1,13 @@
 import React from "react";
-import ReactDOM from "react-dom";
 import * as Components from "./Components";
 import "./SignUp.css";
 import "./background.css";
-import Air from './Air';
-import Background from './back';
+import Background from "./back";
 
-
-export default function App() {
+export default function SignUp() {
   const [signIn, toggle] = React.useState(true);
   return (
     <Components.Container>
-
       <Components.SignUpContainer signingIn={signIn}>
         <Components.Form>
           <Components.Title>Create Account</Components.Title>
@@ -54,10 +50,5 @@ export default function App() {
       </Components.OverlayContainer>
       <Background />
     </Components.Container>
-    
   );
 }
-
-const rootElement = document.getElementById("root");
-ReactDOM.render(<App />, rootElement);
-
