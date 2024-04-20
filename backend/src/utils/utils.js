@@ -20,6 +20,9 @@ export function getSecretToken() {
  * @param {import("express").Request} req
  * */
 export function getTokenFromHeader(req) {
+  if (req.headers.authorization === undefined) {
+    return null;
+  }
   const authHeader = req.headers.authorization;
   const token = authHeader && authHeader.split(" ")[1];
 

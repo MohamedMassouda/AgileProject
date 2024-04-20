@@ -1,4 +1,4 @@
-import { PrismaClient } from "@prisma/client";
+import { $Enums, PrismaClient } from "@prisma/client";
 import { isEmailValid, missingArgsFromReqBody } from "../utils/utils.js";
 import jwt from "jsonwebtoken";
 import {
@@ -22,6 +22,7 @@ export const UserController = {
       },
     });
   },
+
   /**
    * @param {import("express").Request} req
    * @param {import("express").Response} res
@@ -38,7 +39,7 @@ export const UserController = {
 
       const decoded = jwt.verify(token, getSecretToken());
 
-      if (decoded.role.toLowerCase() !== Role.ADMIN) {
+      if (!authorizedRoles().includes(decoded.role)) {
         res.status(403).json({ error: "Unauthorized" });
         return;
       }
@@ -76,7 +77,7 @@ export const UserController = {
 
       // Replaced role: true with roleId: true
       // This way I can get the role as a string that contains the name only instead of getting {id: "", name: ""}
-      const userWithRole = await prisma.user.findUnique({
+      const user = await prisma.user.findUnique({
         where: {
           id: decoded.id,
         },
@@ -84,25 +85,9 @@ export const UserController = {
           id: true,
           name: true,
           email: true,
-          roleId: true,
+          role: true,
         },
       });
-
-      const role = await prisma.role.findUnique({
-        where: {
-          id: userWithRole.roleId,
-        },
-        select: {
-          name: true,
-        },
-      });
-
-      const user = {
-        id: userWithRole.id,
-        name: userWithRole.name,
-        email: userWithRole.email,
-        role: role.name,
-      };
 
       res.json(user);
     } catch (error) {
@@ -143,11 +128,7 @@ export const UserController = {
         name,
         email,
         password,
-        role: {
-          connect: {
-            name: roleName,
-          },
-        },
+        role: $Enums.Role[roleName],
       },
     });
 
@@ -319,3 +300,10 @@ export const UserController = {
     }
   },
 };
+
+/**
+ * @returns {string[]}
+ */
+function authorizedRoles() {
+  return [$Enums.Role.ADMIN, $Enums.Role.OFFICE];
+}
