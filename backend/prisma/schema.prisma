@@ -13,25 +13,46 @@ model User {
   name      String
   password  String
   role      Role     @default(MEMBER)
+  events    Event[]  @relation("EventAttendees")
+  profile   Profile?
+  profileId String?
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-  events    Event[]  @relation("EventAttendees")
 }
 
 model Event {
-  id          String   @id @default(cuid())
+  id          String     @id @default(cuid())
   title       String
   description String
   date        DateTime
   location    String
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-  attendees   User[]   @relation("EventAttendees")
+  attendees   User[]     @relation("EventAttendees")
+  categories  Category[]
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
 }
 
 enum Role {
-  ADMIN
   MEMBER
   OFFICE
   SPONSOR
+}
+
+model Profile {
+  id       String  @id @default(cuid())
+  userId   String  @unique
+  bio      String?
+  imageUrl String?
+  user     User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Category {
+  id        String   @id @default(cuid())
+  name      String
+  events    Event[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }

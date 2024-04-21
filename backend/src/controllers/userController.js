@@ -6,9 +6,18 @@ import {
   getTokenFromHeader,
   debugError,
 } from "../utils/utils.js";
-import { Role } from "../utils/Role.js";
+import bcrypt from "bcrypt";
+
+const saltRounds = 10;
 
 const prisma = new PrismaClient();
+
+const resultSelectUser = {
+  id: true,
+  name: true,
+  email: true,
+  role: true,
+};
 
 export const UserController = {
   /**
@@ -39,18 +48,8 @@ export const UserController = {
 
       const decoded = jwt.verify(token, getSecretToken());
 
-      if (!authorizedRoles().includes(decoded.role)) {
-        res.status(403).json({ error: "Unauthorized" });
-        return;
-      }
-
       const users = await prisma.user.findMany({
-        select: {
-          id: true,
-          name: true,
-          email: true,
-          role: true,
-        },
+        select: resultSelectUser,
       });
 
       res.json(users);
@@ -103,19 +102,44 @@ export const UserController = {
   async getUser(req, res) {
     const { id } = req.params;
 
-    const user = await prisma.user.findUnique({
-      where: {
-        id: id,
-      },
-    });
+    const token = getTokenFromHeader(req);
 
-    res.json(user);
+    if (!token) {
+      res.status(200).json({ error: "Invalid token" });
+      return;
+    }
+
+    try {
+      const decoded = jwt.verify(token, getSecretToken());
+
+      if (!authorizedRoles().includes(decoded.role)) {
+        res.status(403).json({ error: "Unauthorized" });
+        return;
+      }
+
+      const user = await prisma.user.findUnique({
+        where: {
+          id: id,
+        },
+        select: {
+          id: true,
+          name: true,
+          email: true,
+          role: true,
+        },
+      });
+
+      res.json(user);
+    } catch (error) {
+      res.status(400).json({ error: debugError(error) });
+    }
   },
 
   /**
    * @param {string} name
    * @param {string} email
    * @param {string} password
+   * @param {string} roleName
    * @returns {Promise<import("@prisma/client").User>}
    * */
   async create(name, email, password, roleName = "member") {
@@ -123,14 +147,28 @@ export const UserController = {
       throw new Error("Invalid email");
     }
 
-    const user = await prisma.user.create({
-      data: {
-        name,
-        email,
-        password,
-        role: $Enums.Role[roleName],
-      },
-    });
+    let hashedPassword;
+    try {
+      hashedPassword = await bcrypt.hash(password, saltRounds);
+      console.log(hashedPassword);
+    } catch (err) {
+      throw new Error("Error hashing password");
+    }
+
+    let user;
+    try {
+      user = await prisma.user.create({
+        data: {
+          name,
+          email,
+          password: hashedPassword,
+          role: $Enums.Role[roleName],
+        },
+        select: resultSelectUser,
+      });
+    } catch (err) {
+      throw new Error("Error creating user");
+    }
 
     return user;
   },
@@ -149,21 +187,17 @@ export const UserController = {
 
     let user;
     try {
-      user = await prisma.user.findUnique({
-        where: {
-          email: email,
-          password: password,
-        },
-        select: {
-          id: true,
-          email: true,
-          name: true,
-          role: true,
-        },
-      });
+      user = await UserController.findByEmail(email);
 
       if (!user) {
-        res.status(400).json({ error: "Invalid email or password" });
+        res.status(400).json({ error: "User not found" });
+        return;
+      }
+
+      const match = await bcrypt.compare(password, user.password);
+
+      if (!match) {
+        res.status(400).json({ error: "Invalid password" });
         return;
       }
     } catch (error) {
@@ -287,6 +321,20 @@ export const UserController = {
   async deleteUser(req, res) {
     const { id } = req.params;
 
+    const token = getTokenFromHeader(req);
+
+    if (!token) {
+      res.status(200).json({ error: "Invalid token" });
+      return;
+    }
+
+    const decoded = jwt.verify(token, getSecretToken());
+
+    // if (!authorizedRoles().includes(decoded.role)) {
+    //   res.status(403).json({ error: "Unauthorized" });
+    //   return;
+    // }
+
     try {
       await prisma.user.delete({
         where: {
@@ -305,5 +353,5 @@ export const UserController = {
  * @returns {string[]}
  */
 function authorizedRoles() {
-  return [$Enums.Role.ADMIN, $Enums.Role.OFFICE];
+  return [$Enums.Role.OFFICE];
 }

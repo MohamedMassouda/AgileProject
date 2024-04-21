@@ -1,0 +1,15 @@
+{
+  "id": "",
+  "title": "",
+  "description": "",
+  "date": "",
+  "location": "",
+  "attendees": [
+    {
+      "id": "",
+      "name": "",
+      "email": "",
+      "role": "MEMBER"
+    }
+  ]
+}
