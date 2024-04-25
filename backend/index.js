@@ -2,7 +2,7 @@ import { configDotenv } from "dotenv";
 import express from "express";
 import userRouter from "./src/routes/userRoutes.js";
 
-const app = express();
+const app = express()
 
 app.use(express.json());
 configDotenv();

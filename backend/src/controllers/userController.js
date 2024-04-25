@@ -163,6 +163,9 @@ export const UserController = {
           email,
           password: hashedPassword,
           role: $Enums.Role[roleName],
+          member: {
+            create: {},
+          },
         },
         select: resultSelectUser,
       });
