@@ -1,5 +1,6 @@
 import React from "react";
-import Air from './Air';
+import Air from "../Air";
+import "./Background.css";
 
 const Background = () => {
   return (

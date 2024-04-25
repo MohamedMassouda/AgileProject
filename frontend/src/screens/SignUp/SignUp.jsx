@@ -1,8 +1,7 @@
 import React from "react";
-import * as Components from "./Components";
+import * as Components from "../../components/Components";
 import "./SignUp.css";
-import "./background.css";
-import Background from "./back";
+import Background from "../../components/Background/Background";
 
 export default function SignUp() {
   const [signIn, toggle] = React.useState(true);
