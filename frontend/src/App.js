@@ -1,8 +1,10 @@
-import "./App.css";
-import Navbar from "./screens/Navbar.jsx";
+// import "./App.css";
+import Navbar from "./screens/nav/Navbar.jsx";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
-import SignUp from "./screens/SignUp.jsx";
-import Footer from "./screens/Footer.jsx";
+import SignUp from "./screens/register/SignUp.jsx";
+import Footer from "./screens/footer/Footer.jsx";
+import Badge from "./screens/badge/badge.jsx";
+
 
 function App() {
   return (
@@ -11,6 +13,7 @@ function App() {
         <Route path="/" element={<Navbar />} />
         <Route path="/register" element={<SignUp />} />
         <Route path="/footer" element={<Footer />} />
+        <Route path="/badge" element={<Badge />} />
       </Routes>
     </BrowserRouter>
   );
