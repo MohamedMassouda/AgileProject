@@ -12,7 +12,7 @@ const saltRounds = 10;
 
 const prisma = new PrismaClient();
 
-const resultSelectUser = {
+export const resultSelectUser = {
   id: true,
   name: true,
   email: true,
@@ -39,14 +39,17 @@ export const UserController = {
    * */
   async getUsers(req, res) {
     try {
-      const token = getTokenFromHeader(req);
+      const [decoded, errorMessage] = UserController.getUserFromToken(req);
 
-      if (!token) {
-        res.status(200).json({ error: "Invalid token" });
+      if (errorMessage !== "") {
+        res.status(400).json({ error: errorMessage });
         return;
       }
 
-      const decoded = jwt.verify(token, getSecretToken());
+      if (!authorizedRoles().includes(decoded.role)) {
+        res.status(403).json({ error: "Unauthorized" });
+        return;
+      }
 
       const users = await prisma.user.findMany({
         select: resultSelectUser,
@@ -64,16 +67,13 @@ export const UserController = {
    * @returns {Promise<void>}
    * */
   async getSelf(req, res) {
-    const token = getTokenFromHeader(req);
+    const [decoded, errorMessage] = UserController.getUserFromToken(req);
 
-    if (!token) {
-      res.status(200).json({ error: "Invalid token" });
+    if (errorMessage !== "") {
+      res.status(400).json({ error: errorMessage });
       return;
     }
-
     try {
-      const decoded = jwt.verify(token, getSecretToken());
-
       // Replaced role: true with roleId: true
       // This way I can get the role as a string that contains the name only instead of getting {id: "", name: ""}
       const user = await prisma.user.findUnique({
@@ -102,16 +102,14 @@ export const UserController = {
   async getUser(req, res) {
     const { id } = req.params;
 
-    const token = getTokenFromHeader(req);
+    const [decoded, errorMessage] = UserController.getUserFromToken(req);
 
-    if (!token) {
-      res.status(200).json({ error: "Invalid token" });
+    if (errorMessage !== "") {
+      res.status(400).json({ error: errorMessage });
       return;
     }
 
     try {
-      const decoded = jwt.verify(token, getSecretToken());
-
       if (!authorizedRoles().includes(decoded.role)) {
         res.status(403).json({ error: "Unauthorized" });
         return;
@@ -142,15 +140,16 @@ export const UserController = {
    * @param {string} roleName
    * @returns {Promise<import("@prisma/client").User>}
    * */
-  async create(name, email, password, roleName = "member") {
+  async create(name, email, password, roleName = $Enums.Role.MEMBER) {
     if (!isEmailValid(email)) {
       throw new Error("Invalid email");
+    } else if ((await UserController.findByEmail(email)) != null) {
+      throw new Error("Email already exists");
     }
 
     let hashedPassword;
     try {
       hashedPassword = await bcrypt.hash(password, saltRounds);
-      console.log(hashedPassword);
     } catch (err) {
       throw new Error("Error hashing password");
     }
@@ -163,13 +162,24 @@ export const UserController = {
           email,
           password: hashedPassword,
           role: $Enums.Role[roleName],
-          member: {
-            create: {},
-          },
+          imageUrl: "",
+          officeMember:
+            roleName === $Enums.Role.OFFICE_MEMBER
+              ? {
+                  create: {},
+                }
+              : undefined,
+          [roleName.toLowerCase()]:
+            roleName !== $Enums.Role.OFFICE_MEMBER
+              ? {
+                  create: {},
+                }
+              : undefined,
         },
         select: resultSelectUser,
       });
     } catch (err) {
+      console.log(err.message);
       throw new Error("Error creating user");
     }
 
@@ -249,9 +259,6 @@ export const UserController = {
     if (!isEmailValid(email)) {
       res.status(400).json({ error: "Invalid email" });
       return;
-    } else if ((await UserController.findByEmail(email)) != null) {
-      res.status(400).json({ error: "Email already exists" });
-      return;
     }
 
     try {
@@ -324,19 +331,17 @@ export const UserController = {
   async deleteUser(req, res) {
     const { id } = req.params;
 
-    const token = getTokenFromHeader(req);
+    const [decoded, errorMessage] = UserController.getUserFromToken(req);
 
-    if (!token) {
-      res.status(200).json({ error: "Invalid token" });
+    if (errorMessage !== "") {
+      res.status(400).json({ error: errorMessage });
       return;
     }
 
-    const decoded = jwt.verify(token, getSecretToken());
-
-    // if (!authorizedRoles().includes(decoded.role)) {
-    //   res.status(403).json({ error: "Unauthorized" });
-    //   return;
-    // }
+    if (!authorizedRoles().includes(decoded.role)) {
+      res.status(403).json({ error: "Unauthorized" });
+      return;
+    }
 
     try {
       await prisma.user.delete({
@@ -350,11 +355,29 @@ export const UserController = {
       res.status(400).json({ error: debugError(error) });
     }
   },
+  /**
+   * @param {import("express").Request} req
+   * @returns {[jwt.JwtPayload | null, string]}
+   */
+  getUserFromToken(req) {
+    const token = getTokenFromHeader(req);
+
+    if (!token) {
+      return [null, "Invalid token"];
+    }
+
+    try {
+      const decoded = jwt.verify(token, getSecretToken());
+      return [decoded, ""];
+    } catch (error) {
+      return [null, debugError(error)]; // Handle invalid token error
+    }
+  },
 };
 
 /**
  * @returns {string[]}
  */
 function authorizedRoles() {
-  return [$Enums.Role.OFFICE];
+  return [$Enums.Role.OFFICE_MEMBER];
 }

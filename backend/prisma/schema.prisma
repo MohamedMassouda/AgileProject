@@ -59,7 +59,7 @@ model Event {
 
 enum Role {
   MEMBER
-  OFFICE
+  OFFICE_MEMBER
   SPONSOR
 }
 
