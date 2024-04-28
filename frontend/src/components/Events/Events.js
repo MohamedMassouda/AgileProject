@@ -1,6 +1,31 @@
 import React from "react";
 import Event from "./Event";
 import "./Events.css";
+
+/*
+
+  Event Object
+  {
+    id: string,
+    title: string,
+    description: string,
+    date: string,
+    location: string,
+    host: User,
+    attendees: User[]
+    categories: Category[],
+    createdAt: string,
+    updatedAt: string,
+  }
+  
+  Category Object
+  {
+    id: string,
+      name: string,
+      events: Event[]
+  }
+  */
+
 export default function Events() {
   const events = [
     {
