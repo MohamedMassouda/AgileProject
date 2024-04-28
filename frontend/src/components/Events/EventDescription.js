@@ -1,10 +1,11 @@
-// EventDescription.js
+
 import React, { useState } from 'react';
 import './EventDescription.css';
 
 function EventDescription({ event, onBack }) {
   const [showMap, setShowMap] = useState(false);
   const [ticketCount, setTicketCount] = useState(0);
+  const [showSecondaryImage, setShowSecondaryImage] = useState(false);
 
   const toggleMap = () => {
     setShowMap(!showMap);
@@ -20,10 +21,17 @@ function EventDescription({ event, onBack }) {
     }
   };
 
+  const handleBalletClick = () => {
+    setShowSecondaryImage(true);
+  };
+
   return (
     <div className="event-description">
       <div className="event-header">
         <img src={event.imageUrl} alt={event.title} className="event-image" />
+        {showSecondaryImage && (
+          <img src="https://img.freepik.com/free-vector/white-abstract-wallpaper_23-2148830027.jpg?w=996&t=st=1713817489~exp=1713818089~hmac=65b7badec723888d6685717ffe4fc15b83a0bc36d30a1d44427acdb065d70b99" alt="Ballet" className="secondary-image" />
+        )}
       </div>
       <div className="event-body">
         <div className="event-details">
@@ -48,22 +56,27 @@ function EventDescription({ event, onBack }) {
             </div>
           )}
         </div>
-        <div className="general-admission">
-          <h2>General Admission</h2>
-          <div className="ticket-controls">
-            <button className="ticket-button" onClick={handleRemoveTicket}>-</button>
-            <span className="ticket-count">{ticketCount === 0 ? ' ' : ticketCount}</span>
-            <button className="ticket-button" onClick={handleAddTicket}>+</button>
+        <div className="general-admission-container">
+          <div className="general-admission">
+            <h2>General Admission</h2>
+            <div className="ticket-controls">
+              <button className="ticket-button" onClick={handleRemoveTicket}>-</button>
+              <span className="ticket-count">{ticketCount === 0 ? ' ' : ticketCount}</span>
+              <button className="ticket-button" onClick={handleAddTicket}>+</button>
+            </div>
           </div>
         </div>
-        <div className="ballet-section">
+        <div className="reserve-spot-container">
+          <button className="reserve-button">Reserve a Spot</button>
+        </div>
+        <div className="ballet-section" onClick={handleBalletClick}>
           <h2>Ballet / Dance</h2>
           <p>Ballet is an astounding combination of athletic prowess and aesthetic grace. The choreography is utterly precise, calling on a tradition that goes back to the 17th century, and yet the movements come together in a dance form that exudes energy and emotion. Originally, this academic dance technique was strictly bound to opera, where it was an integral part of the performance. In the late 18th century, ballet emerged as an art form in its own right. Many European ballet companies today are still associated with the famous opera houses in which they perform, and they frequently share an orchestra with the opera company.</p>
         </div>
         <div className="event-details">
           <div className="details-item">
             <span>About this event:</span>
-            <p>{event.about}</p>
+            <p>{event.about} (Duration: 2 hours)</p>
           </div>
         </div>
         <button className="back-button" onClick={onBack}>Back</button>
@@ -73,5 +86,3 @@ function EventDescription({ event, onBack }) {
 }
 
 export default EventDescription;
-
-
