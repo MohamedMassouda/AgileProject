@@ -8,4 +8,4 @@ function Event({ event }) {
       </div>
     );
   }
-export default Event;
+export default Event; 
