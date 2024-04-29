@@ -62,6 +62,7 @@ export const OfficeMemberController = {
       "email",
       "password",
     ]);
+
     if (missingArgs.length > 0) {
       res.status(400).json({ error: `Missing arguments: ${missingArgs}` });
       return;
