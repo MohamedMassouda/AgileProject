@@ -191,6 +191,13 @@ export const UserController = {
    * @param {import("express").Response} res
    * */
   async login(req, res, next) {
+    const missingArgs = missingArgsFromReqBody(req, ["email", "password"]);
+
+    if (missingArgs.length > 0) {
+      res.status(400).json({ error: `Missing arguments: ${missingArgs}` });
+      return;
+    }
+
     const { email, password } = req.body;
 
     if (!isEmailValid(email)) {
@@ -215,6 +222,7 @@ export const UserController = {
       }
     } catch (error) {
       res.status(400).json({ error: debugError(error) });
+      return;
     }
 
     let token;
@@ -233,6 +241,7 @@ export const UserController = {
       );
     } catch (error) {
       res.status(500).json({ error: debugError(error) });
+      return;
     }
 
     res.status(200).json({ token: token });

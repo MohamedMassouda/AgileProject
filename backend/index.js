@@ -4,6 +4,7 @@ import userRouter from "./src/routes/userRoutes.js";
 import categoryRouter from "./src/routes/categoryRoutes.js";
 import eventRouter from "./src/routes/eventRoutes.js";
 import officeMemberRouter from "./src/routes/officeRoutes.js";
+import sponsorRouter from "./src/routes/sponsorRoutes.js";
 
 const app = express();
 
@@ -18,6 +19,7 @@ app.use("/users", userRouter);
 app.use("/categories", categoryRouter);
 app.use("/events", eventRouter);
 app.use("/office-members", officeMemberRouter);
+app.use("/sponsors", sponsorRouter);
 
 const port = process.env.PORT || 3000;
 app.listen(port, () => {

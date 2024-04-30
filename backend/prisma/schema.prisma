@@ -13,60 +13,59 @@ model User {
   name         String
   password     String
   role         Role          @default(MEMBER)
-  imageUrl     String?
-  member       Member?
-  sponsor      Sponsor?
-  officeMember OfficeMember?
   createdAt    DateTime      @default(now())
   updatedAt    DateTime      @updatedAt
+  imageUrl     String?
+  member       Member?
+  officeMember OfficeMember?
+  sponsor      Sponsor?
 }
 
 model Member {
-  userId String @id @unique
-  user   User   @relation(fields: [userId], references: [id])
-
+  userId String  @id @unique
+  user   User    @relation(fields: [userId], references: [id])
   events Event[] @relation("EventAttendees")
 }
 
 model Sponsor {
   userId String  @id @unique
-  user   User    @relation(fields: [userId], references: [id])
   events Event[]
+  user   User    @relation(fields: [userId], references: [id])
 }
 
 model OfficeMember {
   userId         String  @id @unique
-  user           User    @relation(fields: [userId], references: [id])
   approvedEvents Event[]
+  user           User    @relation(fields: [userId], references: [id])
 }
 
 model Event {
-  id             String       @id @default(cuid())
+  id             String        @id @default(cuid())
   title          String
   description    String
   date           DateTime
   location       String
-  host           Sponsor      @relation(fields: [hostId], references: [userId])
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
   hostId         String
-  approvedBy     OfficeMember @relation(fields: [officeMemberId], references: [userId])
   isApproved     Boolean
-  officeMemberId String
-  attendees      Member[]     @relation("EventAttendees")
-  categories     Category[]
-  createdAt      DateTime     @default(now())
-  updatedAt      DateTime     @updatedAt
+  officeMemberId String?
+  host           Sponsor       @relation(fields: [hostId], references: [userId])
+  approvedBy     OfficeMember? @relation(fields: [officeMemberId], references: [userId])
+  categories     Category[]    @relation("CategoryToEvent")
+  attendees      Member[]      @relation("EventAttendees")
+}
+
+model Category {
+  id        String   @id @default(cuid())
+  name      String   @unique
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  events    Event[]  @relation("CategoryToEvent")
 }
 
 enum Role {
   MEMBER
   OFFICE_MEMBER
   SPONSOR
-}
-
-model Category {
-  id        String   @id @default(cuid())
-  name      String   @unique
-  events    Event[]
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
 }

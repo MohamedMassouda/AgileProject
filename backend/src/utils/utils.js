@@ -49,6 +49,7 @@ export function debugError(error, message = "Internal server error") {
  * */
 export function missingArgsFromReqBody(req, arg) {
   const missing = [];
+
   for (const a of arg) {
     if (!req.body[a]) {
       missing.push(a);
@@ -56,4 +57,15 @@ export function missingArgsFromReqBody(req, arg) {
   }
 
   return missing.join(", ");
+}
+
+/**
+ * @param {string} str
+ * @returns {string}
+ * */
+export function makeStringBetter(str) {
+  return str
+    .split(" ")
+    .map((s) => s.charAt(0).toUpperCase() + s.substring(1))
+    .join(" ");
 }

@@ -1,8 +1,35 @@
 import { $Enums, PrismaClient } from "@prisma/client";
-import { getTokenFromHeader, missingArgsFromReqBody } from "../utils/utils.js";
-import { UserController } from "./userController.js";
+import {
+  debugError,
+  getTokenFromHeader,
+  missingArgsFromReqBody,
+} from "../utils/utils.js";
+import { UserController, resultSelectUser } from "./userController.js";
+import { CategoryController } from "./categoryController.js";
 
 const prisma = new PrismaClient();
+
+const resultSelectEvent = {
+  id: true,
+  title: true,
+  description: true,
+  date: true,
+  location: true,
+  categories: {
+    select: {
+      id: true,
+      name: true,
+    },
+  },
+
+  host: {
+    select: {
+      user: {
+        select: resultSelectUser,
+      },
+    },
+  },
+};
 
 export const EventController = {
   /**
@@ -15,6 +42,31 @@ export const EventController = {
         id: id,
       },
     });
+  },
+
+  async getEventsFromDB(showAll = false, showUnapproved = false) {
+    const getAllEvents = async () => {
+      return await prisma.event.findMany({
+        select: resultSelectEvent,
+      });
+    };
+
+    try {
+      const events = showAll
+        ? await getAllEvents()
+        : await prisma.event.findMany({
+            where: {
+              isApproved: showUnapproved ? false : true,
+            },
+            select: resultSelectEvent,
+          });
+
+      return events;
+    } catch (error) {
+      console.error(error.message);
+    }
+
+    return [];
   },
 
   /**
@@ -30,24 +82,7 @@ export const EventController = {
     }
 
     try {
-      const events = await prisma.event.findMany({
-        where: {
-          isApproved: true,
-        },
-        select: {
-          id: true,
-          title: true,
-          description: true,
-          date: true,
-          location: true,
-          categories: {
-            select: {
-              id: true,
-              name: true,
-            },
-          },
-        },
-      });
+      const events = await EventController.getEventsFromDB();
 
       res.json(events);
     } catch (error) {
@@ -91,19 +126,24 @@ export const EventController = {
       return res.status(403).json({ error: "Unauthorized" });
     }
 
-    const missing = missingArgsFromReqBody(req.body, [
+    const missing = missingArgsFromReqBody(req, [
       "title",
       "description",
       "date",
       "location",
-      "categoriesId",
+      "categories",
     ]);
 
     if (missing.length > 0)
       return res.status(400).json({ error: `Missing arguments: ${missing}` });
+    else if (typeof req.body.categories !== "object")
+      return res.status(400).json({ error: "Invalid categories" });
 
     try {
-      const { title, description, date, location, categoriesId } = req.body;
+      const { title, description, date, location, categories } = req.body;
+
+      const categoriesId =
+        await CategoryController.categoriedIdFromRequest(categories);
 
       /*
        * Events are created as unapproved by default.
@@ -115,13 +155,21 @@ export const EventController = {
           description,
           date,
           location,
-          categoriesId,
+          host: {
+            connect: {
+              userId: decoded.id,
+            },
+          },
           isApproved: false,
+          categories: {
+            connect: categoriesId.map((id) => ({ id })),
+          },
         },
       });
 
       res.json(event);
     } catch (error) {
+      console.error(error.message);
       res.status(400).json({ error: debugError(error) });
     }
   },
@@ -131,6 +179,24 @@ export const EventController = {
    * @param {import("express").Response} res
    * @returns {Promise<void>}
    * */
+  async getAllEvents(req, res) {
+    const [decoded, errorMessage] = UserController.getUserFromToken(req);
+    if (errorMessage !== "") {
+      return res.status(400).json({ error: errorMessage });
+    }
+
+    if (decoded.role !== $Enums.Role.OFFICE_MEMBER) {
+      return res.status(403).json({ error: "Unauthorized" });
+    }
+
+    try {
+      const events = await EventController.getEventsFromDB(true);
+
+      res.json(events);
+    } catch (error) {
+      res.status(400).json({ error: debugError(error) });
+    }
+  },
 };
 
 function authorizedRoles() {

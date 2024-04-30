@@ -1,5 +1,9 @@
 import { PrismaClient } from "@prisma/client";
-import { debugError, missingArgsFromReqBody } from "../utils/utils.js";
+import {
+  debugError,
+  makeStringBetter,
+  missingArgsFromReqBody,
+} from "../utils/utils.js";
 
 const prisma = new PrismaClient();
 
@@ -76,7 +80,7 @@ export const CategoryController = {
     try {
       category = await prisma.category.create({
         data: {
-          name,
+          name: makeStringBetter(name),
         },
       });
     } catch (error) {
@@ -133,5 +137,33 @@ export const CategoryController = {
     } catch (error) {
       res.status(400).json({ error: debugError(error) });
     }
+  },
+
+  async createCategoryIfNotExists(name) {
+    let category = await CategoryController.findByName(name);
+
+    if (!category) {
+      category = await CategoryController.create(name);
+    }
+
+    return category;
+  },
+
+  /**
+   * @param {string[]} categories
+   * @returns {Promise<string[]>}
+   * */
+  async categoriedIdFromRequest(categories) {
+    const categoriesIds = [];
+
+    for (const category of categories) {
+      await CategoryController.createCategoryIfNotExists(category).then(
+        (category) => {
+          categoriesIds.push(category.id);
+        },
+      );
+    }
+
+    return categoriesIds;
   },
 };

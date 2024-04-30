@@ -1,5 +1,7 @@
 import { $Enums, PrismaClient } from "@prisma/client";
-import { UserController, resultSelectUser } from "./userController";
+import { UserController, resultSelectUser } from "./userController.js";
+import { missingArgsFromReqBody } from "../utils/utils.js";
+import { EventController } from "./eventController.js";
 
 const prisma = new PrismaClient();
 
@@ -81,6 +83,15 @@ export const SponsorController = {
     } catch (error) {
       res.status(400).json({ error: debugError(error) });
     }
+  },
+
+  /**
+   * @param {import("express").Request} req
+   * @param {import("express").Response} res
+   * @returns {Promise<void>}
+   * */
+  async requestEvent(req, res) {
+    await EventController.createEvent(req, res);
   },
 };
 
