@@ -1,10 +1,7 @@
-
 import React, { useState } from 'react';
 import './App.css';
-import './components/Events/EventDescription.css';
 import EventDescription from './components/Events/EventDescription';
-
-
+import { Eventss } from './components/Events/Eventss'; 
 
 function App() {
   const [selectedEvent, setSelectedEvent] = useState(null);
@@ -17,12 +14,12 @@ function App() {
     <div className="app">
       {selectedEvent ? (
         <EventDescription 
-          event={events.find(event => event.id === selectedEvent)}
+          event={Eventss.find(event => event.id === selectedEvent)} 
           onBack={() => setSelectedEvent(null)}
         />
       ) : (
         <div className="event-list">
-          {events.map(event => (
+          {Eventss.map(event => (
             <div key={event.id} className="event" onClick={() => handleEventClick(event.id)}>
               <img src={event.imageUrl} alt={event.title} />
               <h2>{event.title}</h2>
