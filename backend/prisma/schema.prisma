@@ -36,6 +36,7 @@ model Sponsor {
 model OfficeMember {
   userId         String  @id @unique
   approvedEvents Event[]
+  news           News[]
   user           User    @relation(fields: [userId], references: [id])
 }
 
@@ -62,6 +63,18 @@ model Category {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   events    Event[]  @relation("CategoryToEvent")
+}
+
+model News {
+  id       String       @id @default(cuid())
+  title    String
+  content  String
+  writerId String
+  writer   OfficeMember @relation(fields: [writerId], references: [userId])
+  imageUrl String
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 enum Role {
