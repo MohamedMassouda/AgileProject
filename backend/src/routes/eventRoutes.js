@@ -10,4 +10,7 @@ eventRouter.get("/:id", controller.getEventById);
 
 eventRouter.post("/", controller.createEvent);
 
+eventRouter.put("/:id", controller.updateEvent);
+eventRouter.put("/:id/approve", controller.approveEvent);
+
 export default eventRouter;

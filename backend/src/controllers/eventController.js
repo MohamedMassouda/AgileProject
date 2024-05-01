@@ -83,7 +83,7 @@ export const EventController = {
     }
 
     try {
-      const events = await EventController.getEventsFromDB(decoded.id);
+      const events = await EventController.getEventsFromDB();
 
       res.json(events);
     } catch (error) {
@@ -191,10 +191,94 @@ export const EventController = {
     }
 
     try {
-      const events = await EventController.getEventsFromDB(true);
+      const events = await EventController.getEventsFromDB(null, true);
 
       res.json(events);
     } catch (error) {
+      res.status(400).json({ error: debugError(error) });
+    }
+  },
+  /**
+   * @param {import("express").Request} req
+   * @param {import("express").Response} res
+   * @returns {Promise<void>}
+   * */
+  async updateEvent(req, res) {
+    const [decoded, errorMessage] = UserController.getUserFromToken(req);
+    if (errorMessage !== "") {
+      return res.status(400).json({ error: errorMessage });
+    }
+
+    if (!authorizedRoles().includes(decoded.role)) {
+      return res.status(403).json({ error: "Unauthorized" });
+    }
+
+    const missing = missingArgsFromReqBody(req, ["id"]);
+    if (missing.length > 0)
+      return res.status(400).json({ error: `Missing arguments: ${missing}` });
+
+    try {
+      const { id, title, description, date, location, categories } = req.body;
+
+      const categoriesId =
+        await CategoryController.categoriedIdFromRequest(categories);
+
+      const event = await prisma.event.update({
+        where: {
+          id: id,
+        },
+        data: {
+          title,
+          description,
+          date,
+          location,
+          categories: {
+            set: categoriesId.map((id) => ({ id })),
+          },
+        },
+      });
+
+      res.json(event);
+    } catch (error) {
+      console.error(error.message);
+      res.status(400).json({ error: debugError(error) });
+    }
+  },
+
+  /**
+   * @param {import("express").Request} req
+   * @param {import("express").Response} res
+   * @returns {Promise<void>}
+   * */
+  async approveEvent(req, res) {
+    const [decoded, errorMessage] = UserController.getUserFromToken(req);
+    if (errorMessage !== "") {
+      return res.status(400).json({ error: errorMessage });
+    }
+
+    if (decoded.role !== $Enums.Role.OFFICE_MEMBER) {
+      return res.status(403).json({ error: "Unauthorized" });
+    }
+
+    const { id } = req.params;
+    try {
+      const event = await prisma.event.update({
+        where: {
+          id: id,
+        },
+        data: {
+          isApproved: true,
+          approvedBy: {
+            connect: {
+              userId: decoded.id,
+            },
+          },
+        },
+      });
+
+      res.json(event);
+    } catch (error) {
+      console.error(error.message);
       res.status(400).json({ error: debugError(error) });
     }
   },
