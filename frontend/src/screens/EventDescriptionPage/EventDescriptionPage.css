@@ -1,0 +1,135 @@
+.event-description {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 40px;
+  background-color: #fff;
+  border-radius: 8px;
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+}
+
+.event-header {
+  text-align: center;
+}
+
+.event-image {
+  width: 100%;
+  max-width: 600px;
+  height: auto;
+  border-top-left-radius: 8px;
+  border-top-right-radius: 8px;
+  margin-bottom: 20px;
+}
+
+.event-body {
+  padding: 20px 0;
+}
+
+.event-details {
+  margin-bottom: 20px;
+}
+
+.details-item {
+  display: flex;
+  margin-bottom: 10px;
+}
+
+.details-item span {
+  width: 120px;
+  font-weight: bold;
+}
+
+.map-toggle {
+  padding: 8px 16px;
+  font-size: 16px;
+  background-color: #007bff;
+  color: #fff;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.map-toggle:hover {
+  background-color: #0056b3;
+}
+
+.map {
+  margin-top: 20px;
+}
+
+.general-admission-container {
+  margin-top: 20px;
+}
+
+.general-admission {
+  margin-top: 20px;
+}
+
+.general-admission h2 {
+  font-size: 24px;
+  margin-bottom: 10px;
+}
+
+.ticket-controls {
+  display: flex;
+  align-items: center;
+}
+
+.ticket-button {
+  font-size: 18px;
+  margin: 0 5px; /* Adjust the margin here */
+  padding: 5px 10px;
+  border: none;
+  background-color: #007bff;
+  color: #fff;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.ticket-button:hover {
+  background-color: #0056b3;
+}
+
+.ticket-count {
+  font-size: 18px;
+}
+
+.ballet-section {
+  margin-top: 20px;
+}
+
+.reserve-spot-container {
+  text-align: center;
+  margin-top: 20px;
+}
+
+.reserve-button {
+  padding: 12px 24px;
+  font-size: 18px;
+  border: none;
+  background-color: #007bff;
+  color: #fff;
+  cursor: pointer;
+  border-radius: 8px;
+  transition: background-color 0.3s ease;
+}
+
+.reserve-button:hover {
+  background-color: #0056b3;
+}
+
+.back-button {
+  display: block;
+  margin: 20px auto 0;
+  padding: 12px 24px;
+  font-size: 18px;
+  border: none;
+  background-color: #007bff;
+  color: #fff;
+  cursor: pointer;
+  border-radius: 8px;
+  transition: background-color 0.3s ease;
+}
+
+.back-button:hover {
+  background-color: #0056b3;
+}
