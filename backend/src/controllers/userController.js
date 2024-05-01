@@ -80,12 +80,7 @@ export const UserController = {
         where: {
           id: decoded.id,
         },
-        select: {
-          id: true,
-          name: true,
-          email: true,
-          role: true,
-        },
+        select: resultSelectUser,
       });
 
       res.json(user);

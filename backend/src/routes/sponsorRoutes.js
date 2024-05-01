@@ -6,6 +6,7 @@ const sponsorRouter = express.Router();
 const controller = SponsorController;
 
 sponsorRouter.get("/", controller.getSponsors);
+sponsorRouter.get("/me", controller.getSelf);
 
 sponsorRouter.post("/", controller.createSponsor);
 sponsorRouter.post("/request-event", EventController.createEvent);

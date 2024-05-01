@@ -44,7 +44,7 @@ export const EventController = {
     });
   },
 
-  async getEventsFromDB(showAll = false, showUnapproved = false) {
+  async getEventsFromDB(hostId, showAll = false, showUnapproved = false) {
     const getAllEvents = async () => {
       return await prisma.event.findMany({
         select: resultSelectEvent,
@@ -57,6 +57,7 @@ export const EventController = {
         : await prisma.event.findMany({
             where: {
               isApproved: showUnapproved ? false : true,
+              hostId: hostId,
             },
             select: resultSelectEvent,
           });
@@ -82,7 +83,7 @@ export const EventController = {
     }
 
     try {
-      const events = await EventController.getEventsFromDB();
+      const events = await EventController.getEventsFromDB(decoded.id);
 
       res.json(events);
     } catch (error) {
