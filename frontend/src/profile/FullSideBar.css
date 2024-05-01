@@ -1,0 +1,119 @@
+
+:root {
+  --yellow: linear-gradient(180deg, #F8D49A -146.42%, #FAD79D -46.42%);
+  --orange: #fca61f;
+  --black: #242d49;
+  --gray: #788097;
+  --purple: linear-gradient(180deg, #BB67FF 0%, #C484F3 100%);
+  --pink: #FF919D;
+  --glass: rgba(255, 255, 255, 0.54);
+  --boxShadow: 0px 19px 60px rgb(0 0 0 / 8%);
+  --smboxShadow: -79px 51px 60pax rgba(0, 0, 0, 0.08);
+  --activeItem: #f799a354;
+}
+
+.App{
+background: linear-gradient(
+  106.37deg,
+  #ffe1bc 29.63%,
+  #ffcfd1 51.55%,
+  #f3c6f1 90.85% 
+  ); 
+  height:100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+   font-family: "Inter", sans-serif;
+
+}
+/* background colorrrr*/
+
+.AppGlass{
+  display: grid;
+  height: 97%;
+  width: 97%;
+  border-radius:2rem;
+  background-color: var(--glass);
+  overflow:hidden;
+  grid-template-columns: 11rem auto 20rem;
+
+}
+/* nice glassy upper back*/
+
+
+.Sidebar {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  padding-top: 4rem;
+  transition: all 300ms ease;
+  padding-left: 4rem;
+}
+
+.agileProject {
+  position: absolute;
+  top: 25px;
+  left: 20px;
+  height: 5rem;
+  font-weight: bold;
+  font-size: 22px;
+  gap: 1rem;
+  align-items: center;
+}
+
+.agileProject>span {
+  color: var(--pink);
+}
+
+.profilePic {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+}
+
+.user--profile {
+  height: 85%;
+  margin-top: 1.5rem;
+  background: #eda9c8;
+  border-radius: 10px;
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+}
+
+.user--detail {
+  width: 100%;
+  height: 250px;
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.user--detail img {
+  background: #ede4e4;
+  border-radius: 50%;
+  width: 150px;
+}
+
+.user--detail .username {
+  color: #efe9ea;
+  margin-bottom: 0cqmin;
+}
+
+.user--detail .email {
+  color: #a19b9b;
+  font-size: small;
+}
+
+.user-courses {
+  background: #f7eae3;
+  flex: 1;
+  border-radius: 10px;
+  padding: 80px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 10rem;
+}
