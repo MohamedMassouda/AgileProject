@@ -1,12 +1,9 @@
-*{
-    margin: 0;
-    padding: 0;
-  }
+
   section{
     position: relative;
     width: 100%;
     height: 100vh;
-    background: #ffffff;
+    background: #e71c1c;
     overflow: hidden;
   }
   section .air{

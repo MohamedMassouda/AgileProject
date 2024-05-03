@@ -1,108 +1,63 @@
-import "./footer.css";
-import Subs from "./subs";
-import GooglePay from "./icons8-google-pay-50.png";
-import AmazonPay from "./icons8-amazon-pay-50.png";
-import MasterCard from "./icons8-mastercard-50.png";
-import Visa from "./icons8-visa-50.png";
-import PayPal from "./icons8-paypal-50.png";
+import React from 'react';
+import './footer.css';
+import ReactDOM from 'react-dom'
+import { SocialIcon } from 'react-social-icons'
+import Logo from  "C:/Users/user/OneDrive/Bureau/AGILE/AgileProject/frontend/src/screens/nav/backfree.png";
+import { FaXTwitter } from "react-icons/fa6";
 
 
-export default function Footer() {
+const Footer = () => {
   return (
-    <>
-      <footer className="footer">
-        <Subs />
-        <div className="container">
-          <div className="row">
-            <div className="footer-col">
-              <h4>Customer Service</h4>
-              <ul>
-                <li>
-                  <a href="#">Contact Us </a>
-                </li>
-                <li>
-                  <a href="#">Help and Advice </a>
-                </li>
-                <li>
-                  <a href="#">Shipping and Returns </a>
-                </li>
-                <li>
-                  <a href="#">Terms And Conditions</a>
-                </li>{" "}
-                <li>
-                  <a href="#">Refund Policy</a>
-                </li>
-              </ul>
-            </div>
-            <div className="footer-col">
-              <h4>Information</h4>
-              <ul>
-                <li>
-                  <a href="#">About Us</a>
-                </li>
-                <li>
-                  <a href="#">Testimonials</a>
-                </li>
-                <li>
-                  <a href="#">My Account </a>
-                </li>
-                <li>
-                  <a href="#"> Payments & Returns</a>
-                </li>{" "}
-                <li>
-                  <a href="#">view Catalogues Online</a>
-                </li>
-              </ul>
-            </div>
-            <div className="footer-col">
-              <h4>about us</h4>
-              <ul>
-                <li>
-                  <a href="#">Who are we ? </a>
-                </li>
-                <li>
-                  <a href="#"> Corporate Responsibility</a>
-                </li>
-                <li>
-                  <a href="#">California Laws </a>
-                </li>
-                <li>
-                  <a href="#"> Carrers</a>
-                </li>
-                <li>
-                  <a href="#">Privacy Policy</a>
-                </li>
-              </ul>
-            </div>
-            <div className="footer-col">
-              <h4>contact us</h4>
-              <div className="social-links">
-                <p href="#">
-                  {" "}
-                  <i className="fas fa-phone"> </i> +216 56616921{" "}
-                </p>
-                <p href="#">
-                  {" "}
-                  <i className="fas fa-envelope"></i> ahmed.massoudi@horizon-tech.tn{" "}
-                </p>
-                <p href="#">
-                  {" "}
-                  <i className="fas fa-map-marker"> </i>1010 avenue , chandigarh
-                </p>
-              </div>
-            </div>
-          </div>
+    <footer className="footer-distributed">
+      <div className="footer-left">
+      <img src={Logo}alt="Logo" height={200} width={200} />  
+
+        <div className="footer-links">
+          <a href="#" className="link-1">Home</a>
+          <a href="#">Blog</a>
+          <a href="#">Pricing</a>
+          <a href="#">About</a>
+          <a href="#">Faq</a>
+          <a href="#">Contact</a>
         </div>
-        
-      </footer>
-      <div className="footline">
-      <img src={GooglePay} />
-      <img src={AmazonPay} />
-      <img src={MasterCard} />
-      <img src={Visa} />
-      <img src={PayPal} />
-        <p>Copyright &copy; 2024. All Rights Reserved for HORIZON SCHOOL OF DIGIAI TECH</p>
+
+        <p className="footer-company-name">Horizon School Of DigitAI Technologies © 2024</p>
       </div>
-    </>
+
+      <div className="footer-center">
+        <div>
+          <i className="fa fa-map-marker"></i>
+          <p>
+            <span>444 S. Cedros Ave</span> Solana Beach, California
+          </p>
+        </div>
+
+        <div>
+          <i className="fa fa-phone"></i>
+          <p>+1.555.555.5555</p>
+        </div>
+
+        <div>
+          <i className="fa fa-envelope"></i>
+          <p><a href="mailto:ahmed.massoudi@horizon-tech.tn">Contact-GoOut@horizon-tech.tn</a></p>
+        </div>
+      </div>
+
+      <div className="footer-right">
+        <p className="footer-company-about">
+          <span>About the company</span>
+          Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce euismod convallis velit, eu auctor lacus vehicula sit amet.
+        </p>
+
+        <div className="footer-icons">
+          <SocialIcon url="http://www.x.com/" />
+          <SocialIcon url="www.facebook.com" />
+          <SocialIcon url="https://github.com" />
+          <SocialIcon url="https://www.instagram.com" />
+        </div>
+      </div>
+    </footer>
   );
-}
+};
+
+export default Footer;
