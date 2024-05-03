@@ -1,8 +1,6 @@
 import { $Enums, PrismaClient } from "@prisma/client";
 import { UserController, resultSelectUser } from "./userController.js";
-import { debugError, missingArgsFromReqBody } from "../utils/utils.js";
-
-const prisma = new PrismaClient();
+import { prisma, debugError, missingArgsFromReqBody } from "../utils/utils.js";
 
 export const OfficeMemberController = {
   /**

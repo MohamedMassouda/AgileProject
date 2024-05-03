@@ -1,11 +1,10 @@
 import { PrismaClient } from "@prisma/client";
 import {
+  prisma,
   debugError,
   makeStringBetter,
   missingArgsFromReqBody,
 } from "../utils/utils.js";
-
-const prisma = new PrismaClient();
 
 export const CategoryController = {
   /**

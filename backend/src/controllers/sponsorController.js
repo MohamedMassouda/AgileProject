@@ -1,9 +1,6 @@
-import { $Enums, PrismaClient } from "@prisma/client";
-import { UserController, resultSelectUser } from "./userController.js";
-import { debugError, missingArgsFromReqBody } from "../utils/utils.js";
-import { EventController } from "./eventController.js";
-
-const prisma = new PrismaClient();
+import { $Enums } from "@prisma/client";
+import { debugError, missingArgsFromReqBody, prisma } from "../utils/utils.js";
+import { resultSelectUser, UserController } from "./userController.js";
 
 export const SponsorController = {
   /**
@@ -30,17 +27,6 @@ export const SponsorController = {
    * @returns {Promise<void>}
    * */
   async getSponsors(req, res) {
-    const [decoded, errorMessage] = UserController.getUserFromToken(req);
-
-    if (errorMessage.length > 0) {
-      return res.status(400).json({ error: errorMessage });
-    }
-
-    if (!authorizedRoles().includes(decoded.role)) {
-      res.status(403).json({ error: "Unauthorized" });
-      return;
-    }
-
     try {
       const sponsors = await prisma.sponsor.findMany({
         select: {
@@ -96,29 +82,9 @@ export const SponsorController = {
    * @param {import("express").Response} res
    * @returns {Promise<void>}
    * */
-  async requestEvent(req, res) {
-    await EventController.createEvent(req, res);
-  },
-
-  /**
-   * @param {import("express").Request} req
-   * @param {import("express").Response} res
-   * @returns {Promise<void>}
-   * */
   async getSelf(req, res) {
-    const [decoded, errorMessage] = UserController.getUserFromToken(req);
-
-    if (errorMessage.length > 0) {
-      return res.status(400).json({ error: errorMessage });
-    }
-
-    if (decoded.role !== $Enums.Role.SPONSOR) {
-      res.status(403).json({ error: "Unauthorized" });
-      return;
-    }
-
     try {
-      const sponsor = await SponsorController.findById(decoded.id);
+      const sponsor = await SponsorController.findById(req.user.id);
 
       res.json(sponsor);
     } catch (error) {

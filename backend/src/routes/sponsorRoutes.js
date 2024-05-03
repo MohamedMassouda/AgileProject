@@ -1,14 +1,20 @@
+import { $Enums } from "@prisma/client";
 import express from "express";
 import { SponsorController } from "../controllers/sponsorController.js";
-import { EventController } from "../controllers/eventController.js";
+import { authenticateUser } from "../middlewares/userMiddleware.js";
 
 const sponsorRouter = express.Router();
 const controller = SponsorController;
 
-sponsorRouter.get("/", controller.getSponsors);
-sponsorRouter.get("/me", controller.getSelf);
+const authorizedRoles = () => [$Enums.Role.OFFICE_MEMBER];
 
-sponsorRouter.post("/", controller.createSponsor);
-sponsorRouter.post("/request-event", EventController.createEvent);
+const authenticate = (req, res, next) => {
+  authenticateUser(req, res, next, authorizedRoles());
+};
+
+sponsorRouter.get("/", authenticate, controller.getSponsors);
+sponsorRouter.get("/me", authenticateUser, controller.getSelf);
+
+sponsorRouter.post("/", authenticate, controller.createSponsor);
 
 export default sponsorRouter;

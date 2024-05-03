@@ -1,5 +1,3 @@
-import { PrismaClient } from "@prisma/client";
+import { EventController } from "./eventController";
 
-const prisma = new PrismaClient();
-
-const MemberController = {};
+export const MemberController = {};

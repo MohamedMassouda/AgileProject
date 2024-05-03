@@ -1,3 +1,9 @@
+import { PrismaClient } from "@prisma/client";
+import moment from "moment";
+import nodemailer from "nodemailer";
+
+export const prisma = new PrismaClient();
+
 /**
  * @param {string} email
  * @returns {boolean}
@@ -68,4 +74,85 @@ export function makeStringBetter(str) {
     .split(" ")
     .map((s) => s.charAt(0).toUpperCase() + s.substring(1))
     .join(" ");
+}
+
+/**
+ * @param {string} date
+ * @returns {string}
+ * */
+export function makeDateBetter(date) {
+  return moment(date).calendar();
+}
+
+/**
+ * @returns {number}
+ * */
+export function generateOTP() {
+  return Math.floor(100000 + Math.random() * 900000);
+}
+
+/**
+ * @param {string} to
+ * @param {string} userId
+ * @returns {void}
+ * */
+export async function sendEmail(to, userId) {
+  const transporter = nodemailer.createTransport({
+    host: process.env.MAIL_HOST,
+    port: 587,
+    auth: {
+      user: process.env.MAIL_USER,
+      pass: process.env.MAIL_PASS,
+    },
+  });
+
+  const otp = generateOTP();
+
+  try {
+    transporter.sendMail(
+      {
+        from: process.env.MAIL_USER,
+        to,
+        subject: "OTP for password reset",
+        html: `
+    <h1 style="font-size: 30px; color: #333; margin-bottom: 20px">
+      Verification code
+    </h1>
+    <div
+      style="
+        background-color: #f9f9f9;
+        padding: 20px;
+        border-radius: 5px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+      "
+    >
+      <p>Your verification code is: <strong>${otp}</strong></p>
+
+      <p>This email is sent due to login attempt at ${new Date().toLocaleString()}</p>
+      <p>If you did not attempt to login, please ignore this email.</p>
+    </div>
+
+    <p style="font-size: 12px; color: #999; margin-top: 20px">
+      This message is automatically generated. Do not reply to this email.
+    </p>
+      `,
+      },
+      (err, info) => {
+        if (err) {
+          console.error("Error Occured: " + err);
+        } else {
+          console.log(info);
+        }
+      },
+    );
+
+    await prisma.otpToken.create({
+      data: {
+        userId,
+        token: otp.toString(),
+      },
+    });
+  } catch (error) {
+    console.error(error);
+  }
 }

@@ -1,16 +1,17 @@
-import { $Enums, PrismaClient } from "@prisma/client";
-import { isEmailValid, missingArgsFromReqBody } from "../utils/utils.js";
+import { $Enums } from "@prisma/client";
+import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import {
+  debugError,
   getSecretToken,
   getTokenFromHeader,
-  debugError,
+  isEmailValid,
+  missingArgsFromReqBody,
+  prisma,
+  sendEmail,
 } from "../utils/utils.js";
-import bcrypt from "bcrypt";
 
 const saltRounds = 10;
-
-const prisma = new PrismaClient();
 
 export const resultSelectUser = {
   id: true,
@@ -39,18 +40,6 @@ export const UserController = {
    * */
   async getUsers(req, res) {
     try {
-      const [decoded, errorMessage] = UserController.getUserFromToken(req);
-
-      if (errorMessage !== "") {
-        res.status(400).json({ error: errorMessage });
-        return;
-      }
-
-      if (!authorizedRoles().includes(decoded.role)) {
-        res.status(403).json({ error: "Unauthorized" });
-        return;
-      }
-
       const users = await prisma.user.findMany({
         select: resultSelectUser,
       });
@@ -67,18 +56,12 @@ export const UserController = {
    * @returns {Promise<void>}
    * */
   async getSelf(req, res) {
-    const [decoded, errorMessage] = UserController.getUserFromToken(req);
-
-    if (errorMessage !== "") {
-      res.status(400).json({ error: errorMessage });
-      return;
-    }
     try {
       // Replaced role: true with roleId: true
       // This way I can get the role as a string that contains the name only instead of getting {id: "", name: ""}
       const user = await prisma.user.findUnique({
         where: {
-          id: decoded.id,
+          id: req.user.id,
         },
         select: resultSelectUser,
       });
@@ -97,19 +80,7 @@ export const UserController = {
   async getUser(req, res) {
     const { id } = req.params;
 
-    const [decoded, errorMessage] = UserController.getUserFromToken(req);
-
-    if (errorMessage !== "") {
-      res.status(400).json({ error: errorMessage });
-      return;
-    }
-
     try {
-      if (!authorizedRoles().includes(decoded.role)) {
-        res.status(403).json({ error: "Unauthorized" });
-        return;
-      }
-
       const user = await prisma.user.findUnique({
         where: {
           id: id,
@@ -220,26 +191,24 @@ export const UserController = {
       return;
     }
 
-    let token;
-    try {
-      token = jwt.sign(
-        {
-          id: user.id,
-          email: user.email,
-          name: user.name,
-          role: user.role,
-        },
-        getSecretToken(),
-        {
-          expiresIn: "1h",
-        },
-      );
-    } catch (error) {
-      res.status(500).json({ error: debugError(error) });
+    // Send user otp
+    sendEmail(user.email, user.id);
+
+    res.json({ message: "OTP sent to email" });
+  },
+
+  /**
+   * @param {import("express").Request} req
+   * @param {import("express").Response} res
+   * @returns {Promise<void>}
+   * */
+  async validateOtp(req, res) {
+    const { otp } = req.body;
+
+    if (!otp || otp.length !== 6) {
+      res.status(400).json({ error: "Invalid OTP" });
       return;
     }
-
-    res.status(200).json({ token: token });
   },
 
   /**
@@ -335,18 +304,6 @@ export const UserController = {
   async deleteUser(req, res) {
     const { id } = req.params;
 
-    const [decoded, errorMessage] = UserController.getUserFromToken(req);
-
-    if (errorMessage !== "") {
-      res.status(400).json({ error: errorMessage });
-      return;
-    }
-
-    if (!authorizedRoles().includes(decoded.role)) {
-      res.status(403).json({ error: "Unauthorized" });
-      return;
-    }
-
     try {
       await prisma.user.delete({
         where: {
@@ -359,6 +316,7 @@ export const UserController = {
       res.status(400).json({ error: debugError(error) });
     }
   },
+
   /**
    * @param {import("express").Request} req
    * @returns {[jwt.JwtPayload | null, string]}
@@ -378,10 +336,3 @@ export const UserController = {
     }
   },
 };
-
-/**
- * @returns {string[]}
- */
-function authorizedRoles() {
-  return [$Enums.Role.OFFICE_MEMBER];
-}
