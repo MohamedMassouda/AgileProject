@@ -1,13 +1,12 @@
-import { $Enums, PrismaClient } from "@prisma/client";
+import { $Enums } from "@prisma/client";
 import {
   debugError,
-  getTokenFromHeader,
+  makeDateBetter,
   missingArgsFromReqBody,
+  prisma,
 } from "../utils/utils.js";
-import { UserController, resultSelectUser } from "./userController.js";
 import { CategoryController } from "./categoryController.js";
-
-const prisma = new PrismaClient();
+import { resultSelectUser } from "./userController.js";
 
 const resultSelectEvent = {
   id: true,
@@ -23,6 +22,13 @@ const resultSelectEvent = {
   },
 
   host: {
+    select: {
+      user: {
+        select: resultSelectUser,
+      },
+    },
+  },
+  attendees: {
     select: {
       user: {
         select: resultSelectUser,
@@ -47,6 +53,11 @@ export const EventController = {
   async getEventsFromDB(hostId, showAll = false, showUnapproved = false) {
     const getAllEvents = async () => {
       return await prisma.event.findMany({
+        where: {
+          date: {
+            gte: new Date(),
+          },
+        },
         select: resultSelectEvent,
       });
     };
@@ -58,13 +69,21 @@ export const EventController = {
             where: {
               isApproved: showUnapproved ? false : true,
               hostId: hostId,
+              date: {
+                gte: new Date(),
+              },
             },
             select: resultSelectEvent,
           });
 
+      events.map((event) => {
+        event.date = makeDateBetter(event.date);
+      });
+
       return events;
     } catch (error) {
       console.error(error.message);
+      res.status(400).json({ error: debugError(error) });
     }
 
     return [];
@@ -76,12 +95,6 @@ export const EventController = {
    * @returns {Promise<void>}
    * */
   async getEvents(req, res) {
-    const [decoded, errorMessage] = UserController.getUserFromToken(req);
-
-    if (errorMessage.length > 0) {
-      return res.status(400).json({ error: errorMessage });
-    }
-
     try {
       const events = await EventController.getEventsFromDB();
 
@@ -118,15 +131,6 @@ export const EventController = {
    * @returns {Promise<void>}
    * */
   async createEvent(req, res) {
-    const [decoded, errorMessage] = UserController.getUserFromToken(req);
-    if (errorMessage !== "") {
-      return res.status(400).json({ error: errorMessage });
-    }
-
-    if (!authorizedRoles().includes(decoded.role)) {
-      return res.status(403).json({ error: "Unauthorized" });
-    }
-
     const missing = missingArgsFromReqBody(req, [
       "title",
       "description",
@@ -154,11 +158,11 @@ export const EventController = {
         data: {
           title,
           description,
-          date,
+          date: new Date(date),
           location,
           host: {
             connect: {
-              userId: decoded.id,
+              userId: req.user.id,
             },
           },
           isApproved: false,
@@ -181,15 +185,6 @@ export const EventController = {
    * @returns {Promise<void>}
    * */
   async getAllEvents(req, res) {
-    const [decoded, errorMessage] = UserController.getUserFromToken(req);
-    if (errorMessage !== "") {
-      return res.status(400).json({ error: errorMessage });
-    }
-
-    if (decoded.role !== $Enums.Role.OFFICE_MEMBER) {
-      return res.status(403).json({ error: "Unauthorized" });
-    }
-
     try {
       const events = await EventController.getEventsFromDB(null, true);
 
@@ -204,21 +199,10 @@ export const EventController = {
    * @returns {Promise<void>}
    * */
   async updateEvent(req, res) {
-    const [decoded, errorMessage] = UserController.getUserFromToken(req);
-    if (errorMessage !== "") {
-      return res.status(400).json({ error: errorMessage });
-    }
-
-    if (!authorizedRoles().includes(decoded.role)) {
-      return res.status(403).json({ error: "Unauthorized" });
-    }
-
-    const missing = missingArgsFromReqBody(req, ["id"]);
-    if (missing.length > 0)
-      return res.status(400).json({ error: `Missing arguments: ${missing}` });
+    const { id } = req.params;
 
     try {
-      const { id, title, description, date, location, categories } = req.body;
+      const { title, description, date, location, categories } = req.body;
 
       const categoriesId =
         await CategoryController.categoriedIdFromRequest(categories);
@@ -251,15 +235,6 @@ export const EventController = {
    * @returns {Promise<void>}
    * */
   async approveEvent(req, res) {
-    const [decoded, errorMessage] = UserController.getUserFromToken(req);
-    if (errorMessage !== "") {
-      return res.status(400).json({ error: errorMessage });
-    }
-
-    if (decoded.role !== $Enums.Role.OFFICE_MEMBER) {
-      return res.status(403).json({ error: "Unauthorized" });
-    }
-
     const { id } = req.params;
     try {
       const event = await prisma.event.update({
@@ -268,9 +243,10 @@ export const EventController = {
         },
         data: {
           isApproved: true,
+          status: $Enums.EventStatus.APPROVED,
           approvedBy: {
             connect: {
-              userId: decoded.id,
+              userId: req.user.id,
             },
           },
         },
@@ -282,8 +258,140 @@ export const EventController = {
       res.status(400).json({ error: debugError(error) });
     }
   },
-};
 
-function authorizedRoles() {
-  return [$Enums.Role.SPONSOR, $Enums.Role.OFFICE_MEMBER];
-}
+  /**
+   * @param {import("express").Request} req
+   * @param {import("express").Response} res
+   * @returns {Promise<void>}
+   * */
+  async rejectEvent(req, res) {
+    const { id } = req.params;
+    try {
+      const event = await prisma.event.update({
+        where: {
+          id: id,
+        },
+        data: {
+          isApproved: false,
+          status: $Enums.EventStatus.REJECTED,
+          approvedBy: {
+            connect: {
+              userId: req.user.id,
+            },
+          },
+        },
+      });
+
+      res.json(event);
+    } catch (error) {
+      console.error(error.message);
+      res.status(400).json({ error: debugError(error) });
+    }
+  },
+
+  /**
+   * @param {import("express").Request} req
+   * @param {import("express").Response} res
+   * @returns {Promise<void>}
+   * */
+  async addAttendee(req, res) {
+    const { id } = req.params;
+    try {
+      if ((await EventController.findById(id)) === null) {
+        return res.status(404).json({ error: "Event not found" });
+      }
+
+      const isAttending = await prisma.event.findFirst({
+        where: {
+          id: id,
+        },
+        select: {
+          attendees: {
+            where: {
+              userId: req.user.id,
+            },
+          },
+        },
+      });
+
+      if (isAttending.attendees.length > 0) {
+        return res.status(400).json({ error: "User is already attending" });
+      }
+
+      const event = await prisma.event.update({
+        where: {
+          id: id,
+          isApproved: true,
+        },
+        data: {
+          attendees: {
+            connect: {
+              userId: req.user.id,
+            },
+          },
+          attendeeCount: {
+            increment: 1,
+          },
+        },
+      });
+
+      res.json(event);
+    } catch (error) {
+      console.error(error.message);
+      res.status(400).json({ error: debugError(error) });
+    }
+  },
+
+  /**
+   * @param {import("express").Request} req
+   * @param {import("express").Response} res
+   * @returns {Promise<void>}
+   * */
+  async removeAttendee(req, res) {
+    const { id } = req.params;
+    try {
+      if ((await EventController.findById(id)) === null) {
+        return res.status(404).json({ error: "Event not found" });
+      }
+
+      const isAttending = await prisma.event.findFirst({
+        where: {
+          id: id,
+        },
+        select: {
+          attendees: {
+            where: {
+              userId: req.user.id,
+            },
+          },
+        },
+      });
+
+      if (isAttending.attendees.length === 0) {
+        return res.status(400).json({ error: "User is not attending" });
+      }
+
+      const event = await prisma.event.update({
+        where: {
+          id: id,
+          isApproved: true,
+        },
+        data: {
+          attendees: {
+            disconnect: {
+              userId: req.user.id,
+            },
+          },
+          attendeeCount: {
+            decrement: 1,
+          },
+        },
+      });
+
+      res.json(event);
+    } catch (error) {
+      console.error(error.message);
+      res.status(400).json({ error: debugError(error) });
+    }
+  },
+};
