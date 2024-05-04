@@ -1,6 +1,6 @@
 import axios from "axios";
 import React, { useEffect, useState } from "react";
-import Event from "./Event";
+import EventDescription from "../../screens/EventDescriptionPage/EventDescriptionPage";
 import "./Events.css";
 
 /*
@@ -35,7 +35,7 @@ export default function Events() {
       const response = await axios.get("http://localhost:3000/events", {
         headers: {
           Authorization:
-            "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImNsdnJ4eW1tNDAwMDA4eTJ4eHR2aGJuY3oiLCJlbWFpbCI6IndpYmFkYXIzMzFAc2hhbnJldG8uY29tIiwibmFtZSI6IndpYmFkYXIzMzEiLCJyb2xlIjoiTUVNQkVSIiwiaWF0IjoxNzE0ODI1NDIyLCJleHAiOjE3MTQ4MjkwMjJ9.MIVj9_pUEFjSkCaYa_cqInrpYCaFj4SR0LydSntO1KU",
+            "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImNsdnJ4eW1tNDAwMDA4eTJ4eHR2aGJuY3oiLCJlbWFpbCI6IndpYmFkYXIzMzFAc2hhbnJldG8uY29tIiwibmFtZSI6IndpYmFkYXIzMzEiLCJyb2xlIjoiTUVNQkVSIiwiaWF0IjoxNzE0ODU1OTkzLCJleHAiOjE3MTQ4NTk1OTN9.D-HfeLJAWoiiyVn4D3xuAWocde7YMimRZJo49HcF0_U",
         },
       });
       console.log(response.data);
@@ -46,9 +46,9 @@ export default function Events() {
 
   return (
     <div className="event-list">
-      {events.map((event) => (
-        <Event key={event.id} event={event} />
-      ))}
+      {events.length !== 0 ? (
+        <EventDescription event={events[0]} onBack={() => {}} />
+      ) : null}
     </div>
   );
 }

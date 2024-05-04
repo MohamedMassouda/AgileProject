@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import "./Login.css";
+import { AuthProvider, useAuth } from "../../AuthProvider";
 
 const Login = () => {
   const [email, setEmail] = useState("");
@@ -8,10 +9,11 @@ const Login = () => {
 
   const handleLogin = (e) => {
     e.preventDefault();
-    console.log("Email: ", email);
-    console.log("Password: ", password);
-    console.log("showPassword:", showPassword);
+    const [currentUser, login] = useAuth();
+
+    login(email, password);
   };
+
   return (
     <div className="login-container">
       <h2> Login </h2>

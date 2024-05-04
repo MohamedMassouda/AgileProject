@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import "./EventDescription.css";
+import "./EventDescriptionPage.css";
 
 function EventDescription({
   event,
@@ -7,13 +7,8 @@ function EventDescription({
   customSectionTitle,
   customSectionDescription,
 }) {
-  const [showMap, setShowMap] = useState(false);
   const [ticketCount, setTicketCount] = useState(0);
   const [showSecondaryImage, setShowSecondaryImage] = useState(false);
-
-  const toggleMap = () => {
-    setShowMap(!showMap);
-  };
 
   const handleAddTicket = () => {
     setTicketCount((prevCount) => prevCount + 1);
@@ -51,27 +46,6 @@ function EventDescription({
             <span>Location:</span>
             <p>{event.location}</p>
           </div>
-          <div className="details-item">
-            <span>{event.location}</span>
-          </div>
-          <div className="details-item">
-            <button onClick={toggleMap} className="map-toggle">
-              {showMap ? "Hide Map" : "Show Map"}
-            </button>
-          </div>
-          {showMap && (
-            <div className="map">
-              <iframe
-                title="Event Location Map"
-                src={`https://www.google.com/maps/embed/v1/place?q=${event.location}&key=YOUR_API_KEY`}
-                width="600"
-                height="450"
-                style={{ border: 0 }}
-                allowFullScreen=""
-                loading="lazy"
-              ></iframe>
-            </div>
-          )}
         </div>
         <div className="general-admission-container">
           <div className="general-admission">
@@ -99,7 +73,7 @@ function EventDescription({
         <div className="event-details">
           <div className="details-item">
             <span>about this event: </span>
-            <p>{event.description} (Duration: 2 hours)</p>
+            <p>{event.description}</p>
           </div>
         </div>
         <button className="back-button" onClick={onBack}>

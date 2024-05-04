@@ -1,5 +1,5 @@
 .event-description {
-  max-width: 800px;
+  max-width: 1000px;
   margin: 0 auto;
   padding: 40px;
   background: linear-gradient(
@@ -107,4 +107,11 @@
 .reserve-button:hover,
 .back-button:hover {
   background-color: #f7d4e8; /* Soft pink button color on hover */
+}
+
+.ticket-controls {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 20px;
 }
