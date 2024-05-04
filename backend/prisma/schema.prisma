@@ -1,9 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -13,32 +7,96 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-// Roles are admin, member, office(office member), sponsor
 model User {
+  id            String        @id @default(cuid())
+  email         String        @unique
+  name          String
+  password      String
+  role          Role          @default(MEMBER)
+  emailVerified Boolean       @default(false)
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+  imageUrl      String?
+  member        Member?
+  officeMember  OfficeMember?
+  sponsor       Sponsor?
+  otpToken      OtpToken?
+}
+
+model OtpToken {
+  userId    String   @id @unique
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  token     String
+  expiresAt DateTime
+}
+
+model Member {
+  userId String  @id @unique
+  user   User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  events Event[] @relation("EventAttendees")
+}
+
+model Sponsor {
+  userId String  @id @unique
+  events Event[]
+  user   User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model OfficeMember {
+  userId         String  @id @unique
+  approvedEvents Event[]
+  news           News[]
+  user           User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Event {
+  id             String        @id @default(cuid())
+  title          String
+  description    String
+  date           DateTime      @default(now())
+  location       String
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
+  hostId         String
+  isApproved     Boolean
+  status         EventStatus   @default(PENDING)
+  officeMemberId String?
+  host           Sponsor       @relation(fields: [hostId], references: [userId])
+  approvedBy     OfficeMember? @relation(fields: [officeMemberId], references: [userId])
+  categories     Category[]    @relation("CategoryToEvent")
+  attendees      Member[]      @relation("EventAttendees")
+  attendeeCount  Int           @default(0)
+}
+
+model Category {
   id        String   @id @default(cuid())
-  email     String   @unique
-  name      String
-  password  String
-  role      Role     @relation(fields: [roleId], references: [id])
-  roleId    String
-  events    Event[]  @relation("EventAttendees")
+  name      String   @unique
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  events    Event[]  @relation("CategoryToEvent")
+}
+
+model News {
+  id       String       @id @default(cuid())
+  title    String
+  content  String
+  writerId String
+  writer   OfficeMember @relation(fields: [writerId], references: [userId])
+  imageUrl String?
+  date     DateTime     @default(now())
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
 
-model Role {
-  id    String @id @default(cuid())
-  name  String @unique
-  users User[]
+enum Role {
+  MEMBER
+  OFFICE_MEMBER
+  SPONSOR
 }
 
-model Event {
-  id          String   @id @default(cuid())
-  title       String
-  description String
-  date        DateTime
-  location    String
-  attendees   User[]   @relation("EventAttendees")
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+enum EventStatus {
+  PENDING
+  APPROVED
+  REJECTED
 }

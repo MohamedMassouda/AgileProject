@@ -1,14 +1,25 @@
-import { PrismaClient } from "@prisma/client";
-import { isEmailValid, missingArgsFromReqBody } from "../utils/utils.js";
+import { $Enums } from "@prisma/client";
+import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import {
+  debugError,
   getSecretToken,
   getTokenFromHeader,
-  debugError,
+  isEmailValid,
+  missingArgsFromReqBody,
+  prisma,
+  sendEmail,
+  sendEmailVerification,
 } from "../utils/utils.js";
-import { Role } from "../utils/Role.js";
 
-const prisma = new PrismaClient();
+const saltRounds = 10;
+
+export const resultSelectUser = {
+  id: true,
+  name: true,
+  email: true,
+  role: true,
+};
 
 export const UserController = {
   /**
@@ -22,6 +33,7 @@ export const UserController = {
       },
     });
   },
+
   /**
    * @param {import("express").Request} req
    * @param {import("express").Response} res
@@ -29,27 +41,8 @@ export const UserController = {
    * */
   async getUsers(req, res) {
     try {
-      const token = getTokenFromHeader(req);
-
-      if (!token) {
-        res.status(200).json({ error: "Invalid token" });
-        return;
-      }
-
-      const decoded = jwt.verify(token, getSecretToken());
-
-      if (decoded.role.toLowerCase() !== Role.ADMIN) {
-        res.status(403).json({ error: "Unauthorized" });
-        return;
-      }
-
       const users = await prisma.user.findMany({
-        select: {
-          id: true,
-          name: true,
-          email: true,
-          role: true,
-        },
+        select: resultSelectUser,
       });
 
       res.json(users);
@@ -64,45 +57,15 @@ export const UserController = {
    * @returns {Promise<void>}
    * */
   async getSelf(req, res) {
-    const token = getTokenFromHeader(req);
-
-    if (!token) {
-      res.status(200).json({ error: "Invalid token" });
-      return;
-    }
-
     try {
-      const decoded = jwt.verify(token, getSecretToken());
-
       // Replaced role: true with roleId: true
       // This way I can get the role as a string that contains the name only instead of getting {id: "", name: ""}
-      const userWithRole = await prisma.user.findUnique({
+      const user = await prisma.user.findUnique({
         where: {
-          id: decoded.id,
+          id: req.user.id,
         },
-        select: {
-          id: true,
-          name: true,
-          email: true,
-          roleId: true,
-        },
+        select: resultSelectUser,
       });
-
-      const role = await prisma.role.findUnique({
-        where: {
-          id: userWithRole.roleId,
-        },
-        select: {
-          name: true,
-        },
-      });
-
-      const user = {
-        id: userWithRole.id,
-        name: userWithRole.name,
-        email: userWithRole.email,
-        role: role.name,
-      };
 
       res.json(user);
     } catch (error) {
@@ -118,38 +81,74 @@ export const UserController = {
   async getUser(req, res) {
     const { id } = req.params;
 
-    const user = await prisma.user.findUnique({
-      where: {
-        id: id,
-      },
-    });
+    try {
+      const user = await prisma.user.findUnique({
+        where: {
+          id: id,
+        },
+        select: {
+          id: true,
+          name: true,
+          email: true,
+          role: true,
+        },
+      });
 
-    res.json(user);
+      res.json(user);
+    } catch (error) {
+      res.status(400).json({ error: debugError(error) });
+    }
   },
 
   /**
    * @param {string} name
    * @param {string} email
    * @param {string} password
+   * @param {string} roleName
    * @returns {Promise<import("@prisma/client").User>}
    * */
-  async create(name, email, password, roleName = "member") {
+  async create(name, email, password, roleName = $Enums.Role.MEMBER) {
     if (!isEmailValid(email)) {
       throw new Error("Invalid email");
+    } else if ((await UserController.findByEmail(email)) != null) {
+      throw new Error("Email already exists");
     }
 
-    const user = await prisma.user.create({
-      data: {
-        name,
-        email,
-        password,
-        role: {
-          connect: {
-            name: roleName,
-          },
+    let hashedPassword;
+    try {
+      hashedPassword = await bcrypt.hash(password, saltRounds);
+    } catch (err) {
+      throw new Error("Error hashing password");
+    }
+
+    let user;
+    try {
+      user = await prisma.user.create({
+        data: {
+          name,
+          email,
+          password: hashedPassword,
+          role: $Enums.Role[roleName],
+          imageUrl: "",
+          officeMember:
+            roleName === $Enums.Role.OFFICE_MEMBER
+              ? {
+                  create: {},
+                }
+              : undefined,
+          [roleName.toLowerCase()]:
+            roleName !== $Enums.Role.OFFICE_MEMBER
+              ? {
+                  create: {},
+                }
+              : undefined,
         },
-      },
-    });
+        select: resultSelectUser,
+      });
+    } catch (err) {
+      console.log(err.message);
+      throw new Error("Error creating user");
+    }
 
     return user;
   },
@@ -158,7 +157,14 @@ export const UserController = {
    * @param {import("express").Request} req
    * @param {import("express").Response} res
    * */
-  async login(req, res, next) {
+  async login(req, res) {
+    const missingArgs = missingArgsFromReqBody(req, ["email", "password"]);
+
+    if (missingArgs.length > 0) {
+      res.status(400).json({ error: `Missing arguments: ${missingArgs}` });
+      return;
+    }
+
     const { email, password } = req.body;
 
     if (!isEmailValid(email)) {
@@ -168,46 +174,57 @@ export const UserController = {
 
     let user;
     try {
-      user = await prisma.user.findUnique({
-        where: {
-          email: email,
-          password: password,
-        },
-        select: {
-          id: true,
-          email: true,
-          name: true,
-          role: true,
-        },
-      });
+      user = await UserController.findByEmail(email);
 
       if (!user) {
-        res.status(400).json({ error: "Invalid email or password" });
+        res.status(400).json({ error: "User not found" });
+        return;
+      }
+
+      const match = await bcrypt.compare(password, user.password);
+
+      if (!match) {
+        res.status(400).json({ error: "Invalid password" });
+        return;
+      }
+
+      if (!user.emailVerified) {
+        res.status(400).json({ error: "Email not verified" });
         return;
       }
     } catch (error) {
       res.status(400).json({ error: debugError(error) });
+      return;
     }
 
-    let token;
+    // Send user otp
+    sendEmail(user.email, user.id);
+
+    res.json({ message: "OTP sent to email" });
+  },
+
+  /**
+   * @param {import("express").Request} req
+   * @param {import("express").Response} res
+   * @returns {Promise<void>}
+   * */
+  async verifyEmail(req, res) {
+    const { id } = req.params;
+
     try {
-      token = jwt.sign(
-        {
-          id: user.id,
-          email: user.email,
-          name: user.name,
-          role: user.role,
+      await prisma.user.update({
+        where: {
+          id: id,
         },
-        getSecretToken(),
-        {
-          expiresIn: "1h",
+        data: {
+          emailVerified: true,
         },
-      );
-    } catch (error) {
-      res.status(500).json({ error: debugError(error) });
-    }
+      });
 
-    res.status(200).json({ token: token });
+      res.status(200).json({ message: "Email verified" });
+    } catch (error) {
+      res.status(400).json({ error: debugError(error) });
+    }
   },
 
   /**
@@ -231,13 +248,11 @@ export const UserController = {
     if (!isEmailValid(email)) {
       res.status(400).json({ error: "Invalid email" });
       return;
-    } else if ((await UserController.findByEmail(email)) != null) {
-      res.status(400).json({ error: "Email already exists" });
-      return;
     }
 
     try {
       const user = await UserController.create(name, email, password);
+      sendEmailVerification(user.email, user.id);
 
       res.json(user);
     } catch (error) {
@@ -316,6 +331,26 @@ export const UserController = {
       res.status(204).send();
     } catch (error) {
       res.status(400).json({ error: debugError(error) });
+    }
+  },
+
+  /**
+   * @param {import("express").Request} req
+   * @returns {[jwt.JwtPayload | null, string]}
+   */
+  getUserFromToken(req) {
+    console.log("Here");
+    const token = getTokenFromHeader(req);
+
+    if (!token) {
+      return [null, "Invalid token"];
+    }
+
+    try {
+      const decoded = jwt.verify(token, getSecretToken());
+      return [decoded, ""];
+    } catch (error) {
+      return [null, debugError(error)]; // Handle invalid token error
     }
   },
 };

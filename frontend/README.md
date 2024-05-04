@@ -1,70 +1,41 @@
-# Getting Started with Create React App
+# Welcome to Frontend branch
+### This branch will contain all of your combined code
+### Please make sure to follow the instructions in the README.md file
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+## Naming Convention
+### It should be as follows:
+- Follow the CamelCase naming convention for the component name
+- components/ComponentName if the component doesn't need a css file
+- components/ComponentName/ComponentName if the component needs a css file
 
-## Available Scripts
+**Note:**
+- Your javascript files should be named as ComponentName.jsx (for the already created components I will rename them)
+- Your css files should be named as ComponentName.css (for the already created components I will rename them) and the component itself should use it not in another component
+- You can use any template you want as long as you understand the code
+- You can follow any tutorial
 
-In the project directory, you can run:
+## Necessities
+- Formatter to be use: Prettier (You can install it as an extension in your code editor or by installing it using npm)
 
-### `npm start`
+## Instructions
+- After you make sure that your code is working correctly, push your code to the frontend branch using the following command:
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+:warning: Do not touch App.js, index.js files unless adding a new Route
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
-
-### `npm test`
-
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
-
-### `npm run build`
-
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
-
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
-
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
-
-### `npm run eject`
-
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
-
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
-
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
-
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
-
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
-
-### Code Splitting
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
-
-### Analyzing the Bundle Size
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
-
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+**Note**: Make sure you are in the root of the project (AgileProject) <br>
+this step will be needed only once
+```bash
+git branch yourname # Create a branch with your name
+```
+```bash
+git checkout yourname # Switch to your branch
+```
+```bash
+git add frontend/ # Add the files/folders that modified
+```
+```bash
+git commit -m "Your message here" # Commit your changes
+```
+```bash
+git push origin yourname # Push your changes to the frontend branch
+```

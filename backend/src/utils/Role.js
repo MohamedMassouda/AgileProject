@@ -1,9 +1,6 @@
 import { PrismaClient } from "@prisma/client";
 
-const prisma = new PrismaClient();
-
 export class Role {
-  static ADMIN = "admin";
   static Member = "member";
   static Office = "office";
   static Sponsor = "sponsor";
@@ -22,7 +19,6 @@ export class Role {
 
   createAllRoles() {
     try {
-      this.createRole(Role.ADMIN);
       this.createRole(Role.Member);
       this.createRole(Role.Office);
       this.createRole(Role.Sponsor);
