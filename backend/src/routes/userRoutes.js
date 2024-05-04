@@ -2,6 +2,7 @@ import { $Enums } from "@prisma/client";
 import express from "express";
 import { UserController } from "../controllers/userController.js";
 import { authenticateUser } from "../middlewares/userMiddleware.js";
+import { OtpController } from "../controllers/otpController.js";
 
 const userRouter = express.Router();
 const controller = UserController;
@@ -17,11 +18,13 @@ const authenticate = (req, res, next) => {
   authenticateUser(req, res, next, authorizedRoles());
 };
 
-userRouter.get("/validate-otp", controller.validateOtp);
+userRouter.get("/validate-otp", OtpController.validateOtp);
+userRouter.get("/verify-email/:id", controller.verifyEmail);
+userRouter.get("/resend-otp", OtpController.resendOtp);
+
 userRouter.get("/", authenticate, controller.getUsers);
 userRouter.get("/me", authenticateUser, controller.getSelf);
 userRouter.get("/:id", authenticate, controller.getUser);
-userRouter.get("/verify-email/:id", controller.verifyEmail);
 
 userRouter.post("/", controller.createUser);
 userRouter.post("/login", controller.login);

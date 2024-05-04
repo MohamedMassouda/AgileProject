@@ -1,6 +1,7 @@
 import { PrismaClient } from "@prisma/client";
 import moment from "moment";
 import nodemailer from "nodemailer";
+import { OtpController } from "../controllers/otpController.js";
 
 export const prisma = new PrismaClient();
 
@@ -94,19 +95,12 @@ export function makeDateBetter(date) {
 }
 
 /**
- * @returns {number}
- * */
-export function generateOTP() {
-  return Math.floor(100000 + Math.random() * 900000);
-}
-
-/**
  * @param {string} to
  * @param {string} userId
  * @returns {void}
  * */
 export async function sendEmail(to, userId) {
-  const otp = generateOTP();
+  const otp = OtpController.generateOTP();
 
   // Create a 3min expiration time
   const expirationTime = new Date();
@@ -147,13 +141,7 @@ export async function sendEmail(to, userId) {
       },
     );
 
-    await prisma.otpToken.create({
-      data: {
-        userId,
-        token: otp.toString(),
-        expiresAt: expirationTime,
-      },
-    });
+    await OtpController.create(otp, userId);
   } catch (error) {
     console.error(error);
   }
