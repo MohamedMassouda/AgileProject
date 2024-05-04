@@ -17,9 +17,11 @@ const authenticate = (req, res, next) => {
   authenticateUser(req, res, next, authorizedRoles());
 };
 
+userRouter.get("/validate-otp", controller.validateOtp);
 userRouter.get("/", authenticate, controller.getUsers);
 userRouter.get("/me", authenticateUser, controller.getSelf);
 userRouter.get("/:id", authenticate, controller.getUser);
+userRouter.get("/verify-email/:id", controller.verifyEmail);
 
 userRouter.post("/", controller.createUser);
 userRouter.post("/login", controller.login);

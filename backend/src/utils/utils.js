@@ -4,6 +4,15 @@ import nodemailer from "nodemailer";
 
 export const prisma = new PrismaClient();
 
+const transporter = nodemailer.createTransport({
+  host: process.env.MAIL_HOST,
+  port: 587,
+  auth: {
+    user: process.env.MAIL_USER,
+    pass: process.env.MAIL_PASS,
+  },
+});
+
 /**
  * @param {string} email
  * @returns {boolean}
@@ -97,27 +106,19 @@ export function generateOTP() {
  * @returns {void}
  * */
 export async function sendEmail(to, userId) {
-  const transporter = nodemailer.createTransport({
-    host: process.env.MAIL_HOST,
-    port: 587,
-    auth: {
-      user: process.env.MAIL_USER,
-      pass: process.env.MAIL_PASS,
-    },
-  });
-
   const otp = generateOTP();
+
+  // Create a 3min expiration time
+  const expirationTime = new Date();
+  expirationTime.setMinutes(expirationTime.getMinutes() + 3);
 
   try {
     transporter.sendMail(
       {
         from: process.env.MAIL_USER,
         to,
-        subject: "OTP for password reset",
+        subject: "Verification code",
         html: `
-    <h1 style="font-size: 30px; color: #333; margin-bottom: 20px">
-      Verification code
-    </h1>
     <div
       style="
         background-color: #f9f9f9;
@@ -150,9 +151,50 @@ export async function sendEmail(to, userId) {
       data: {
         userId,
         token: otp.toString(),
+        expiresAt: expirationTime,
       },
     });
   } catch (error) {
     console.error(error);
   }
+}
+
+export function sendEmailVerification(to, tokenId) {
+  transporter.sendMail(
+    {
+      from: process.env.MAIL_USER,
+      to,
+      subject: "Email verification",
+      html: `
+    <div
+      style="
+        background-color: #f9f9f9;
+        padding: 20px;
+        border-radius: 5px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+      "
+    >
+      <p>Click the link below to verify your email:</p>
+
+      <a href="${process.env.CLIENT_URL}/users/verify-email/${tokenId}" style="display: block; margin-top: 10px; color: #007bff; text-decoration: none;">
+        Verify email
+      </a>
+
+      <p>This email is sent due to registration at ${new Date().toLocaleString()}</p>
+      <p>If you did not register, please ignore this email.</p>
+    </div>
+
+    <p style="font-size: 12px; color: #999; margin-top: 20px">
+      This message is automatically generated. Do not reply to this email.
+    </p>
+      `,
+    },
+    (err, info) => {
+      if (err) {
+        console.error("Error Occured: " + err);
+      } else {
+        console.log(info);
+      }
+    },
+  );
 }

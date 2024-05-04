@@ -9,6 +9,7 @@ import {
   missingArgsFromReqBody,
   prisma,
   sendEmail,
+  sendEmailVerification,
 } from "../utils/utils.js";
 
 const saltRounds = 10;
@@ -156,7 +157,7 @@ export const UserController = {
    * @param {import("express").Request} req
    * @param {import("express").Response} res
    * */
-  async login(req, res, next) {
+  async login(req, res) {
     const missingArgs = missingArgsFromReqBody(req, ["email", "password"]);
 
     if (missingArgs.length > 0) {
@@ -186,6 +187,11 @@ export const UserController = {
         res.status(400).json({ error: "Invalid password" });
         return;
       }
+
+      if (!user.emailVerified) {
+        res.status(400).json({ error: "Email not verified" });
+        return;
+      }
     } catch (error) {
       res.status(400).json({ error: debugError(error) });
       return;
@@ -203,11 +209,91 @@ export const UserController = {
    * @returns {Promise<void>}
    * */
   async validateOtp(req, res) {
-    const { otp } = req.body;
+    const missingArgs = missingArgsFromReqBody(req, ["otp", "userId"]);
+
+    if (missingArgs.length > 0) {
+      res.status(400).json({ error: `Missing arguments: ${missingArgs}` });
+      return;
+    }
+
+    const { otp, userId } = req.body;
 
     if (!otp || otp.length !== 6) {
       res.status(400).json({ error: "Invalid OTP" });
       return;
+    }
+
+    try {
+      const token = await prisma.otpToken.findFirst({
+        where: {
+          token: otp,
+          userId: userId,
+        },
+      });
+
+      if (!token) {
+        res.status(400).json({ error: "Invalid OTP" });
+        return;
+      }
+
+      if (token.expiresAt < new Date()) {
+        res.status(400).json({ error: "OTP expired" });
+        return;
+      }
+    } catch (error) {
+      res.status(400).json({ error: debugError(error) });
+    }
+
+    const user = await UserController.findById(userId);
+
+    let token;
+    try {
+      token = jwt.sign(
+        {
+          id: user.id,
+          email: user.email,
+          name: user.name,
+          role: user.role,
+        },
+        getSecretToken(),
+        {
+          expiresIn: "1h",
+        },
+      );
+    } catch (error) {
+      res.status(500).json({ error: debugError(error) });
+    }
+
+    await prisma.otpToken.deleteMany({
+      where: {
+        userId: userId,
+      },
+    });
+
+    res.status(200).json({ token: token });
+  },
+
+  /**
+   * @param {import("express").Request} req
+   * @param {import("express").Response} res
+   * @returns {Promise<void>}
+   * */
+  async verifyEmail(req, res) {
+    const { id } = req.params;
+
+    try {
+      await prisma.user.update({
+        where: {
+          id: id,
+        },
+        data: {
+          emailVerified: true,
+        },
+      });
+
+      res.status(200).json({ message: "Email verified" });
+    } catch (error) {
+      res.status(400).json({ error: debugError(error) });
     }
   },
 
@@ -236,6 +322,7 @@ export const UserController = {
 
     try {
       const user = await UserController.create(name, email, password);
+      sendEmailVerification(user.email, user.id);
 
       res.json(user);
     } catch (error) {
@@ -322,6 +409,7 @@ export const UserController = {
    * @returns {[jwt.JwtPayload | null, string]}
    */
   getUserFromToken(req) {
+    console.log("Here");
     const token = getTokenFromHeader(req);
 
     if (!token) {

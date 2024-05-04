@@ -24,28 +24,29 @@ model User {
 }
 
 model OtpToken {
-  userId String @id @unique
-  user   User   @relation(fields: [userId], references: [id])
-  token  String
+  userId    String   @id @unique
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  token     String
+  expiresAt DateTime
 }
 
 model Member {
   userId String  @id @unique
-  user   User    @relation(fields: [userId], references: [id])
+  user   User    @relation(fields: [userId], references: [id], onDelete: Cascade)
   events Event[] @relation("EventAttendees")
 }
 
 model Sponsor {
   userId String  @id @unique
   events Event[]
-  user   User    @relation(fields: [userId], references: [id])
+  user   User    @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 model OfficeMember {
   userId         String  @id @unique
   approvedEvents Event[]
   news           News[]
-  user           User    @relation(fields: [userId], references: [id])
+  user           User    @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 model Event {
