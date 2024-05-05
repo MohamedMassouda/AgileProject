@@ -4,7 +4,7 @@ import { BrowserRouter, Route, Routes } from "react-router-dom";
 import SignUp from "./screens/register/SignUp.jsx";
 import Footer from "./screens/footer/Footer.jsx";
 import Badge from "./screens/badge/badge.jsx";
-import Page from "./screens/confirmation/Page.jsx";
+import OTPPage from "./screens/confirmation/CodeConfirmation.jsx";
 
 
 function App() {
@@ -15,7 +15,7 @@ function App() {
         <Route path="/register" element={<SignUp />} />
         <Route path="/footer" element={<Footer />} />
         <Route path="/badge" element={<Badge />} />
-        <Route path="/confirmation" element={<Page />} />
+        <Route path="/confirmation" element={<OTPPage numberOfDigits={6} />} />
       </Routes>
     </BrowserRouter>
   );
