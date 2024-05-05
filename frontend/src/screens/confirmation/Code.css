@@ -1,0 +1,46 @@
+.App {
+    font-family: sans-serif;
+    height: 95vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    background: #36454F;
+    width: 905hv;
+  }
+  
+  .code-input {
+    display: flex;
+    flex-direction: column;
+    align-items: start;
+  }
+  .code-label {
+    margin-bottom: 16px;
+  }
+  .code-inputs {
+    display: flex;
+    justify-content: start;
+    align-items: center;
+  }
+  .code-inputs input {
+    border: none;
+    background-image: none;
+    background-color: transparent;
+    -webkit-box-shadow: none;
+    -moz-box-shadow: none;
+    box-shadow: none;
+    text-align: center;
+    height: 60px;
+    width: 40px;
+    border-radius: 10px;
+    margin: 0 4px;
+    border: 2px solid #4f5b66;
+    font-size: 38px;
+  }
+  .code-inputs input:focus {
+    outline: none;
+  }
+  .code-inputs input:nth-child(3n) {
+    margin-right: 24px;
+  }
+  
