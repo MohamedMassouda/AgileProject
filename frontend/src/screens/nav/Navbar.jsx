@@ -2,8 +2,9 @@ import React, { useState } from "react";
 import { MenuItems } from "./MenuItems";
 import Button from "./button.js";
 import "./Navbar.css";
-import Logo from  "./Logo.png";
+import Logo from  "./backfree.png";
 import { AiOutlineMenu, AiOutlineClose } from "react-icons/ai";
+
 
 const Navbar = () => {
   const [clicked, setClicked] = useState(false);
@@ -11,7 +12,7 @@ const Navbar = () => {
   return (
     <nav className="NavbarItems">
       <a href="" className="navbar-logo">
-        <img src={Logo}alt="Logo" height={50} />
+        <img src={Logo}alt="Logo" height={150} />
       </a>
 
       <div className="menu-icon" onClick={() => setClicked(!clicked)}>
@@ -30,6 +31,7 @@ const Navbar = () => {
       </ul>
       <Button>Sign Up</Button>
     </nav>
+    
   );
 };
 

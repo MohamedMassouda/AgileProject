@@ -4,12 +4,15 @@ import "./SignUp.css";
 import "./background.css";
 import Background from "./back";
 
+
+
+
 export default function SignUp() {
   const [signIn, toggle] = React.useState(true);
   return (
-    <Components.Container>
+    <Components.Container className="sign">
       <Components.SignUpContainer signingIn={signIn}>
-        <Components.Form>
+        <Components.Form >
           <Components.Title>Create Account</Components.Title>
           <Components.Input type="text" placeholder="Name" />
           <Components.Input type="email" placeholder="Email" />
