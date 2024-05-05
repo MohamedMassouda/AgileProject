@@ -9,7 +9,7 @@
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
   color: #daa520;
   width: 800px;
-  height: 200px;
+  height: 300px;
   
 }
 
@@ -30,7 +30,7 @@
 }
 
 .error {
-  color: #red;
+  color: red;
   font-size: 14px;
   margin-top: 10px;
 }
