@@ -1,0 +1,89 @@
+.form-container {
+  width: 50%;
+  margin: 0 auto;
+  padding: auto;
+  display: flex;
+  /*flex-direction: column;*/
+  align-items: center;
+  justify-content: center;
+  height: auto;
+  /*background: linear-gradient(to top,   #f9ba98, #ffffff)
+
+
+}*/
+}
+
+.form {
+  width: 100%;
+  margin: 0 auto;
+  padding: 30px;
+  border-radius: 25px;
+  box-shadow: 0 0 30px rgba(0, 0, 0, 0.3);
+  background: linear-gradient(to top, #f9ba98, #f5cdb6, #f6bfbf);
+  backdrop-filter: blur(10px);
+  text-align: center;
+}
+
+h2 {
+  text-align: center;
+  margin-bottom: 20px;
+  color: #989595;
+  font-family: "Gill Sans", "Gill Sans MT", Calibri, "Trebuchet MS", sans-serif;
+}
+
+p {
+  margin-right: 10px;
+  color: #989595;
+  font-family: "Gill Sans", "Gill Sans MT", Calibri, "Trebuchet MS", sans-serif;
+}
+
+.input,
+.textarea,
+.select {
+  width: 65%;
+  margin: 0 auto;
+  padding: 15px;
+  margin-bottom: 15px;
+  border: 1px solid #ccc;
+  border-radius: 25px;
+  background-color: rgba(255, 255, 255, 0.3);
+}
+
+.button {
+  display: block;
+  width: 350px;
+  padding: 15px;
+  background-color: rgba(255, 255, 255, 0.3);
+  color: #070707;
+  margin: 10px auto;
+  border: none;
+  border-radius: 25px;
+  cursor: pointer;
+}
+.button1 {
+  display: block;
+  width: 300px;
+  padding: 15px;
+  background-color: rgba(255, 255, 255, 0.3);
+  color: #070707;
+  margin: 10px auto;
+  border: none;
+  border-radius: 25px;
+  cursor: pointer;
+}
+
+.button:hover {
+  background-color: rgba(255, 102, 0, 0.3);
+}
+.button1:hover {
+  background-color: rgba(255, 102, 0, 0.3);
+}
+
+.select-container {
+  position: relative;
+}
+
+
+.select option {
+  padding: 10px;
+}
