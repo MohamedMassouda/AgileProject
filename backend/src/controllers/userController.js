@@ -8,18 +8,13 @@ import {
   isEmailValid,
   missingArgsFromReqBody,
   prisma,
+  resultSelectEvent,
+  resultSelectUser,
   sendEmail,
   sendEmailVerification,
 } from "../utils/utils.js";
 
 const saltRounds = 10;
-
-export const resultSelectUser = {
-  id: true,
-  name: true,
-  email: true,
-  role: true,
-};
 
 export const UserController = {
   /**
@@ -64,7 +59,15 @@ export const UserController = {
         where: {
           id: req.user.id,
         },
-        select: resultSelectUser,
+        select: {
+          id: true,
+          name: true,
+          email: true,
+          role: true,
+          imageUrl: true,
+          emailVerified: true,
+          events: true,
+        },
       });
 
       res.json(user);
@@ -339,7 +342,6 @@ export const UserController = {
    * @returns {[jwt.JwtPayload | null, string]}
    */
   getUserFromToken(req) {
-    console.log("Here");
     const token = getTokenFromHeader(req);
 
     if (!token) {

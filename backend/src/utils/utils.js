@@ -186,3 +186,42 @@ export function sendEmailVerification(to, tokenId) {
     },
   );
 }
+
+export const resultSelectUser = {
+  id: true,
+  name: true,
+  email: true,
+  role: true,
+  imageUrl: true,
+  emailVerified: true,
+};
+
+export const resultSelectEvent = {
+  id: true,
+  title: true,
+  description: true,
+  date: true,
+  location: true,
+  imageUrl: true,
+  categories: {
+    select: {
+      id: true,
+      name: true,
+    },
+  },
+
+  host: {
+    select: {
+      user: {
+        select: resultSelectUser,
+      },
+    },
+  },
+  attendees: {
+    select: {
+      user: {
+        select: resultSelectUser,
+      },
+    },
+  },
+};

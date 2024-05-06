@@ -17,7 +17,7 @@ model User {
   createdAt     DateTime      @default(now())
   updatedAt     DateTime      @updatedAt
   imageUrl      String?
-  member        Member?
+  events        Event[]       @relation("EventAttendees")
   officeMember  OfficeMember?
   sponsor       Sponsor?
   otpToken      OtpToken?
@@ -28,12 +28,6 @@ model OtpToken {
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   token     String
   expiresAt DateTime
-}
-
-model Member {
-  userId String  @id @unique
-  user   User    @relation(fields: [userId], references: [id], onDelete: Cascade)
-  events Event[] @relation("EventAttendees")
 }
 
 model Sponsor {
@@ -58,13 +52,14 @@ model Event {
   createdAt      DateTime      @default(now())
   updatedAt      DateTime      @updatedAt
   hostId         String
+  imageUrl       String        @default("")
   isApproved     Boolean
   status         EventStatus   @default(PENDING)
   officeMemberId String?
   host           Sponsor       @relation(fields: [hostId], references: [userId])
   approvedBy     OfficeMember? @relation(fields: [officeMemberId], references: [userId])
   categories     Category[]    @relation("CategoryToEvent")
-  attendees      Member[]      @relation("EventAttendees")
+  attendees      User[]        @relation("EventAttendees")
   attendeeCount  Int           @default(0)
 }
 

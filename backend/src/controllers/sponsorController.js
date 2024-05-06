@@ -1,6 +1,11 @@
 import { $Enums } from "@prisma/client";
-import { debugError, missingArgsFromReqBody, prisma } from "../utils/utils.js";
-import { resultSelectUser, UserController } from "./userController.js";
+import {
+  debugError,
+  missingArgsFromReqBody,
+  prisma,
+  resultSelectUser,
+} from "../utils/utils.js";
+import { UserController } from "./userController.js";
 
 export const SponsorController = {
   /**

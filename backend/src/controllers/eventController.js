@@ -4,38 +4,9 @@ import {
   makeDateBetter,
   missingArgsFromReqBody,
   prisma,
+  resultSelectEvent,
 } from "../utils/utils.js";
 import { CategoryController } from "./categoryController.js";
-import { resultSelectUser } from "./userController.js";
-
-const resultSelectEvent = {
-  id: true,
-  title: true,
-  description: true,
-  date: true,
-  location: true,
-  categories: {
-    select: {
-      id: true,
-      name: true,
-    },
-  },
-
-  host: {
-    select: {
-      user: {
-        select: resultSelectUser,
-      },
-    },
-  },
-  attendees: {
-    select: {
-      user: {
-        select: resultSelectUser,
-      },
-    },
-  },
-};
 
 export const EventController = {
   /**

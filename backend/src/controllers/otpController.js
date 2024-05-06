@@ -37,24 +37,25 @@ export const OtpController = {
    * @returns {Promise<void>}
    * */
   async validateOtp(req, res) {
-    const missing = missingArgsFromReqBody(req, ["otp", "userId"]);
+    const missing = missingArgsFromReqBody(req, ["otp"]);
 
     if (missing.length > 0) {
       return res.status(400).json({ error: `Missing ${missing.join(", ")}` });
     }
 
-    const { otp, userId } = req.body;
+    const { otp } = req.body;
 
     if (!otp || otp.length !== 6) {
       res.status(400).json({ error: "Invalid OTP" });
       return;
     }
 
+    let userId;
     try {
       const token = await prisma.otpToken.findFirst({
         where: {
           token: otp,
-          userId: userId,
+          // userId: userId,
         },
       });
 
@@ -67,6 +68,8 @@ export const OtpController = {
         res.status(400).json({ error: "OTP expired" });
         return;
       }
+
+      userId = token.userId;
     } catch (error) {
       return res.status(400).json({ error: debugError(error) });
     }
@@ -91,7 +94,7 @@ export const OtpController = {
       return res.status(500).json({ error: debugError(error) });
     }
 
-    res.status(200).json({ token: token });
+    res.status(200).json({ token: token, message: "You are logged in" });
   },
 
   /**
