@@ -1,18 +1,29 @@
 import "./App.css";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import SignUp from "./screens/SignUp/SignUp.jsx";
-import Footer from "./components/Footer/Footer";
 import HomePage from "./screens/HomePage";
-import { AuthProvider } from "./AuthProvider.jsx";
+import { AuthProvider, useAuth } from "./AuthProvider.jsx";
+import EventDescription from "./screens/EventDescriptionPage/EventDescriptionPage.jsx";
 
 function App() {
+  const { currentUser } = useAuth();
+
+  const routes = [{ path: "/login", element: <SignUp /> }];
+
+  if (currentUser && currentUser.emailVerified) {
+    routes.push({ path: "/", element: <HomePage /> });
+    routes.push({ path: "/events/:id", element: <EventDescription /> });
+  } else {
+    routes.push({ path: "/", element: <SignUp /> });
+  }
+
   return (
     <BrowserRouter>
       <AuthProvider>
         <Routes>
-          <Route path="/" element={<HomePage />} />
-          <Route path="/register" element={<SignUp />} />
-          <Route path="/footer" element={<Footer />} />
+          {routes.map((route, index) => (
+            <Route key={index} {...route} />
+          ))}
         </Routes>
       </AuthProvider>
     </BrowserRouter>
