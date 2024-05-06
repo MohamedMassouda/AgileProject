@@ -3,14 +3,11 @@
   margin: 0 auto;
   padding: auto;
   display: flex;
-  /*flex-direction: column;*/
   align-items: center;
   justify-content: center;
   height: auto;
-  /*background: linear-gradient(to top,   #f9ba98, #ffffff)
+ 
 
-
-}*/
 }
 
 .form {

@@ -1,98 +1,4 @@
-/*import React, { useEffect, useState } from "react";
-import "./RequestPage.css";
 
-function EventRequestPage() {
-  const [formData, setFormData] = useState({
-    title: "",
-    description: "",
-    date: "",
-    location: "",
-    category: "",
-  });
-  const [newCategory, setNewCategory] = useState(""); ///////////////::
-  const [categories, setCategories] = useState([
-    {
-      id: "1",
-      name: "Music",
-    },
-    {
-      id: "2",
-      name: "Sport",
-    },
-    {
-      id: "3",
-      name: "Test1",
-    },
-    {
-      id: "4",
-      name: "Test2",
-    },
-  ]);
-
-  const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
-  };
-
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    console.log(formData);
-  };
-  
-  */
-    
-
-    /*
-    return (
-      
-      <div className="form-container">
-        <form className="form" onSubmit={handleSubmit}>
-          <h2>Event Request Form</h2>
-          <input
-            type="text"
-            name="eventName"
-            placeholder="Event Name"
-            className="input"
-          />
-          <textarea
-            type="text"
-            name="eventDescription"
-            placeholder="Event Description"
-            className="textarea"
-          />
-          <input
-            type="text"
-            name="eventLocation"
-            placeholder="Event Location"
-            className="input"
-          />
-          <input
-            type="datetime-local"
-            name="eventDate"
-            placeholder="Event Date"
-            className="input"
-          />
-          
-          <p>Select category</p>
-          <select name="eventCategory" className="select" multiple onChange={handleChange}>
-            <option value="Test">Test</option>
-            {categories.map((category) => {
-              return <option key={category.id} value={category.id}>{category.name}</option>;
-            })}
-          </select>
-          
-          
-
-          <button type="submit" className="button">
-            Submit
-          </button>
-        </form>
-      </div>
-      
-    );
-  ;
-
-export default EventRequestPage;
-*/
 import React, { useEffect, useState } from "react";
 import "./RequestPage.css";
 
@@ -104,7 +10,7 @@ function EventRequestPage() {
     location: "",
     category: "",
   });
-  const [newCategory, setNewCategory] = useState(""); ///////////////::
+  const [newCategory, setNewCategory] = useState(""); 
   const [categories, setCategories] = useState([
     {
       id: "1",
@@ -141,7 +47,7 @@ function EventRequestPage() {
       };
       setCategories([...categories, newCategoryObj]);
       setFormData({ ...formData, category: newCategoryId });
-      setNewCategory(""); // Clear input field after adding category
+      setNewCategory(""); 
     }
   };
 
@@ -189,7 +95,7 @@ function EventRequestPage() {
           multiple 
           onChange={handleChange}  
         >
-          {/*<option value="">Select Category</option>*/}
+          
           {categories.map((category) => {
             return (
               <option key={category.id} value={category.id}>
@@ -198,9 +104,6 @@ function EventRequestPage() {
             );
           })}
         </select>
-
-
-       
 
         <input
           type="text"
