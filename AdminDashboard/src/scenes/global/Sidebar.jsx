@@ -19,6 +19,7 @@ import MapOutlinedIcon from "@mui/icons-material/MapOutlined";
 import EventIcon from "@mui/icons-material/Event";
 import NewspaperIcon from '@mui/icons-material/Newspaper';
 import EventNoteIcon from '@mui/icons-material/EventNote';
+import ExitToAppIcon from '@mui/icons-material/ExitToApp';
 
 const Item = ({ title, to, icon, selected, setSelected }) => {
   const theme = useTheme();
@@ -136,7 +137,7 @@ const Sidebar = () => {
               Data
             </Typography>
             <Item
-              title="Manage Team"
+              title="Manage Events"
               to="/team"
               icon={<PeopleOutlinedIcon />}
               selected={selected}
@@ -231,7 +232,7 @@ const Sidebar = () => {
             <Item
               title="EXIT"
               to="/exit"
-              icon={<MapOutlinedIcon />}
+              icon={<ExitToAppIcon />}
               selected={selected}
               setSelected={setSelected}
             />

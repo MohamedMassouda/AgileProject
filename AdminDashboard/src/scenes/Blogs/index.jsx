@@ -16,7 +16,7 @@ export default function TextFields() {
     >
       <TextField label="Title" color="secondary" focused cla/>
       <br />
-      <TextField label="Content" variant="filled" color="success" focused width="100px" />
+      <textarea label="Content" variant="filled" color="success" focused width="100px" />
     </Box>
     </div>
   );
