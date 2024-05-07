@@ -9,6 +9,7 @@ export function getCookies() {
 
 export function saveCookies(token) {
   localStorage.setItem(TOKEN, token);
+  localStorage.setItem("session", Date.now());
 }
 
 export function deleteCookies() {

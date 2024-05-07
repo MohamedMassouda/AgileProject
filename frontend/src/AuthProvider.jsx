@@ -1,25 +1,22 @@
+import { createClient } from "@supabase/supabase-js";
+import axios from "axios";
 import { createContext, useContext, useEffect, useState } from "react";
 import { OTP_VALIDATE_URL, USER_URL } from "./utils/constants";
+import { getCookies, saveCookies } from "./utils/cookies";
 import { isEmailValid } from "./utils/functions";
 import { toastError, toastSuccess } from "./utils/toast";
-import { deleteCookies, getCookies, saveCookies } from "./utils/cookies";
 
-const AuthContext = createContext(
-  /** @type {{ currentUser: any; login: (email: string, password: string) => Promise<void>; }} */
-  {
-    currentUser: {
-      id: String,
-      name: String,
-      email: String,
-      role: String,
-      imageUrl: String,
-      emailVerified: Boolean,
-    },
-    login: async (email, password) => {},
-    signUp: async (name, email, password) => {},
-    validateOtp: async (otp) => {},
-  },
+export const supabase = createClient(
+  "https://riilpymuwsigdasgmkvg.supabase.co",
+  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJpaWxweW11d3NpZ2Rhc2dta3ZnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MTQzMTE2NTIsImV4cCI6MjAyOTg4NzY1Mn0.f-bb4SXWxxRBFgfp7cxgY4AxD6LoUrjygzx07ZDDoHQ",
 );
+
+const AuthContext = createContext({
+  currentUser: null,
+  login: async (email, password) => {},
+  signUp: async (name, email, password) => {},
+  validateOtp: async (otp) => {},
+});
 
 export function useAuth() {
   return useContext(AuthContext);
@@ -27,24 +24,32 @@ export function useAuth() {
 
 export function AuthProvider({ children }) {
   const [currentUser, setCurrentUser] = useState(null);
+  const [session, setSession] = useState(null);
 
   useEffect(() => {
-    async function fetchUser() {
-      const token = getCookies();
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setSession(session);
+    });
 
-      if (!token) {
-        return;
-      }
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((event, session) => {
+      setSession(session);
+    });
 
-      const decoded = jwt.decode(token);
-
-      if (decoded.exp * 1000 < Date.now()) {
-        deleteCookies();
-        return;
-      }
-
-      getUserFromCookies();
-    }
+    return () => {
+      subscription.unsubscribe();
+    };
+    // async function fetchUser() {
+    //   if (localStorage.getItem("session") < Date.now() - 1000 * 60 * 60 * 24) {
+    //     deleteCookies();
+    //     return;
+    //   }
+    //
+    //   getUserFromCookies();
+    // }
+    //
+    // fetchUser();
   }, []);
 
   /**
@@ -63,8 +68,6 @@ export function AuthProvider({ children }) {
     if (!email.trim() || !password.trim()) {
       return;
     }
-
-    console.log(email, password);
 
     try {
       await fetch(USER_URL + "/login", {
@@ -85,6 +88,8 @@ export function AuthProvider({ children }) {
           toastSuccess(data.message);
           userLoggedIn = true;
         });
+
+      supabase.auth.signInWithPassword({ email, password });
     } catch (error) {}
   }
 
@@ -147,23 +152,21 @@ export function AuthProvider({ children }) {
   }
 
   async function getUserFromCookies(token = getCookies()) {
-    if (!getCookies()) {
+    if (!token) {
       return;
     }
 
     try {
-      const response = await fetch(USER_URL + "/me", {
-        method: "GET",
+      const response = await axios.get(USER_URL + "/me", {
         headers: {
-          "Content-Type": "application/json",
           Authorization: "Bearer " + token,
         },
       });
 
-      if (response.ok) {
-        const userData = await response.json();
+      if (response.status === 200) {
+        const data = response.data;
 
-        setCurrentUser(userData);
+        setCurrentUser(data);
       } else {
         console.error("Failed to fetch user data:", response.statusText);
       }
