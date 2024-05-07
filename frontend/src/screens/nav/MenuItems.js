@@ -16,7 +16,7 @@ export const MenuItems = [
     },
     {
       title: "Admin",
-      url: "/services",
+      url: "http://localhost:3001",
       cName: "nav-links",
     },
     {

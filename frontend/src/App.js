@@ -4,7 +4,7 @@ import { BrowserRouter, Route, Routes } from "react-router-dom";
 import SignUp from "./screens/register/SignUp.jsx";
 import Footer from "./screens/footer/Footer.jsx";
 import Badge from "./screens/badge/badge.jsx";
-import OTPPage from "./screens/confirmation/CodeConfirmation.jsx";
+import OTPPage from "./screens/confirmation/CodeConfirmation.jsx"
 
 
 function App() {
