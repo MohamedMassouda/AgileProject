@@ -50,6 +50,13 @@ export const NewsController = {
         },
       });
 
+      const users = await prisma.user.findMany({
+        where: {
+          isSubscribedToNews: true,
+        },
+      });
+      sendNewsToSubscribers(users, news);
+
       res.status(201).json(news);
     } catch (error) {
       res.status(400).json({ error: debugError(error) });
@@ -102,6 +109,66 @@ export const NewsController = {
       });
 
       res.status(204).send();
+    } catch (error) {
+      res.status(400).json({ error: debugError(error) });
+    }
+  },
+
+  /**
+   * @param {import("express").Request} req
+   * @param {import("express").Response} res
+   * @returns {Promise<void>}
+   * */
+  async subscribeToNews(req, res) {
+    const missing = missingArgsFromReqBody(req, ["email"]);
+
+    if (missing.length > 0) {
+      return res.status(400).json({ error: `Missing ${missing.join(", ")}` });
+    }
+
+    const { email } = req.body;
+
+    try {
+      await prisma.user.update({
+        where: {
+          email,
+        },
+        data: {
+          isSubscribedToNews: true,
+        },
+      });
+
+      res.status(200).send();
+    } catch (error) {
+      res.status(400).json({ error: debugError(error) });
+    }
+  },
+
+  /**
+   * @param {import("express").Request} req
+   * @param {import("express").Response} res
+   * @returns {Promise<void>}
+   * */
+  async unsubscribeToNews(req, res) {
+    const missing = missingArgsFromReqBody(req, ["email"]);
+
+    if (missing.length > 0) {
+      return res.status(400).json({ error: `Missing ${missing.join(", ")}` });
+    }
+
+    const { email } = req.body;
+
+    try {
+      await prisma.user.update({
+        where: {
+          email,
+        },
+        data: {
+          isSubscribedToNews: false,
+        },
+      });
+
+      res.status(200).send();
     } catch (error) {
       res.status(400).json({ error: debugError(error) });
     }

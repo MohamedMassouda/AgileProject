@@ -14,4 +14,7 @@ newsRouter.get("/", authenticateUser, controller.getNews);
 
 newsRouter.post("/", authenticate, controller.createNews);
 
+newsRouter.put("/subscribe", controller.subscribeToNews);
+newsRouter.put("/unsubscribe", controller.unsubscribeToNews);
+
 export default newsRouter;

@@ -1,4 +1,4 @@
-import { PrismaClient } from "@prisma/client";
+import { Prisma, PrismaClient } from "@prisma/client";
 import moment from "moment";
 import nodemailer from "nodemailer";
 import { OtpController } from "../controllers/otpController.js";
@@ -185,6 +185,36 @@ export function sendEmailVerification(to, tokenId) {
       }
     },
   );
+}
+
+/**
+ * @param {string[]} users
+ * @param {import("@prisma/client").News} news
+ * @returns {void}
+ * */
+export function sendNewsToSubscribers(users, news) {
+  transporter.sendMail({
+    from: process.env.MAIL_USER,
+    to: users.join(", "),
+    subject: "Latest news",
+    html: `
+    <div
+      style="
+        background-color: #f9f9f9;
+        padding: 20px;
+        border-radius: 5px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+      "
+    >
+      <p>Here are the latest news:</p>
+
+      <p>${news.title}</p>
+
+      <p>This email is sent due to the latest news at ${new Date().toLocaleString()}</p>
+      <p>If you do not want to receive these emails, <a href="${process.env.CLIENT_URL}/news/unsubscribe"></a></p>
+    </div>
+      `,
+  });
 }
 
 export const resultSelectUser = {

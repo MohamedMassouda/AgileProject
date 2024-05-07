@@ -3,24 +3,26 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
 }
 
 model User {
-  id            String        @id @default(cuid())
-  email         String        @unique
-  name          String
-  password      String
-  role          Role          @default(MEMBER)
-  emailVerified Boolean       @default(false)
-  createdAt     DateTime      @default(now())
-  updatedAt     DateTime      @updatedAt
-  imageUrl      String?
-  events        Event[]       @relation("EventAttendees")
-  officeMember  OfficeMember?
-  sponsor       Sponsor?
-  otpToken      OtpToken?
+  id                 String        @id @default(cuid())
+  email              String        @unique
+  name               String
+  password           String
+  role               Role          @default(MEMBER)
+  emailVerified      Boolean       @default(false)
+  createdAt          DateTime      @default(now())
+  updatedAt          DateTime      @updatedAt
+  imageUrl           String?
+  events             Event[]       @relation("EventAttendees")
+  isSubscribedToNews Boolean       @default(false)
+  officeMember       OfficeMember?
+  sponsor            Sponsor?
+  otpToken           OtpToken?
 }
 
 model OtpToken {
@@ -76,7 +78,7 @@ model News {
   title    String
   content  String
   writerId String
-  writer   OfficeMember @relation(fields: [writerId], references: [userId])
+  writer   OfficeMember @relation(fields: [writerId], references: [userId], onDelete: Cascade)
   imageUrl String?
   date     DateTime     @default(now())
 

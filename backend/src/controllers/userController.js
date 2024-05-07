@@ -8,7 +8,6 @@ import {
   isEmailValid,
   missingArgsFromReqBody,
   prisma,
-  resultSelectEvent,
   resultSelectUser,
   sendEmail,
   sendEmailVerification,
@@ -66,7 +65,11 @@ export const UserController = {
           role: true,
           imageUrl: true,
           emailVerified: true,
-          events: true,
+          events: {
+            select: {
+              id: true,
+            },
+          },
         },
       });
 
@@ -139,12 +142,8 @@ export const UserController = {
                   create: {},
                 }
               : undefined,
-          [roleName.toLowerCase()]:
-            roleName !== $Enums.Role.OFFICE_MEMBER
-              ? {
-                  create: {},
-                }
-              : undefined,
+          sponsor:
+            roleName === $Enums.Role.SPONSOR ? { create: {} } : undefined,
         },
         select: resultSelectUser,
       });
