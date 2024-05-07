@@ -1,16 +1,10 @@
 import React from "react";
-import { createClient } from "@supabase/supabase-js";
-import axios from "axios";
-import { createContext, useContext, useEffect, useState } from "react";
+import { createContext, useContext, useEffect, useRef, useState } from "react";
 import { OTP_VALIDATE_URL, USER_URL } from "./utils/constants";
-import { getCookies, saveCookies } from "./utils/cookies";
 import { isEmailValid } from "./utils/functions";
 import { toastError, toastSuccess } from "./utils/toast";
-
-export const supabase = createClient(
-  "https://riilpymuwsigdasgmkvg.supabase.co",
-  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJpaWxweW11d3NpZ2Rhc2dta3ZnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MTQzMTE2NTIsImV4cCI6MjAyOTg4NzY1Mn0.f-bb4SXWxxRBFgfp7cxgY4AxD6LoUrjygzx07ZDDoHQ",
-);
+import { deleteCookies, getCookies, saveCookies } from "./utils/cookies";
+import axios from "axios";
 
 const AuthContext = createContext({
   currentUser: null,
@@ -25,33 +19,23 @@ export function useAuth() {
 
 export function AuthProvider({ children }) {
   const [currentUser, setCurrentUser] = useState(null);
-  const [session, setSession] = useState(null);
 
   useEffect(() => {
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setSession(session);
-    });
+    async function fetchUser() {
+      if (localStorage.getItem("session") < Date.now() - 1000 * 60 * 60 * 24) {
+        deleteCookies();
+        return;
+      }
 
-    const {
-      data: { subscription },
-    } = supabase.auth.onAuthStateChange((event, session) => {
-      setSession(session);
-    });
+      getUserFromCookies();
+    }
 
-    return () => {
-      subscription.unsubscribe();
-    };
-    // async function fetchUser() {
-    //   if (localStorage.getItem("session") < Date.now() - 1000 * 60 * 60 * 24) {
-    //     deleteCookies();
-    //     return;
-    //   }
-    //
-    //   getUserFromCookies();
-    // }
-    //
-    // fetchUser();
+    fetchUser();
   }, []);
+
+  useEffect(() => {
+    console.log("User", currentUser);
+  }, [currentUser]);
 
   /**
    * @param {string} email
@@ -59,8 +43,6 @@ export function AuthProvider({ children }) {
    * @returns {Promise<void>}
    */
   async function login(email, password) {
-    let userLoggedIn = false;
-
     if (!isEmailValid(email)) {
       toastError("Please enter a valid email");
       return;
@@ -81,16 +63,17 @@ export function AuthProvider({ children }) {
         .then((res) => res.json())
         .then((data) => {
           if (data.error) {
-            userLoggedIn = false;
             toastError(data.error);
             return;
           }
 
           toastSuccess(data.message);
-          userLoggedIn = true;
-        });
 
-      supabase.auth.signInWithPassword({ email, password });
+          saveCookies(data.token);
+
+          getUserFromCookies(data.token);
+          localStorage.setItem("session", Date.now());
+        });
     } catch (error) {}
   }
 
@@ -158,6 +141,13 @@ export function AuthProvider({ children }) {
     }
 
     try {
+      // const response = await fetch(USER_URL + "/me", {
+      //   method: "GET",
+      //   headers: {
+      //     "Content-Type": "application/json",
+      //     Authorization: "Bearer " + token,
+      //   },
+      // });
       const response = await axios.get(USER_URL + "/me", {
         headers: {
           Authorization: "Bearer " + token,
@@ -166,7 +156,6 @@ export function AuthProvider({ children }) {
 
       if (response.status === 200) {
         const data = response.data;
-
         setCurrentUser(data);
       } else {
         console.error("Failed to fetch user data:", response.statusText);

@@ -9,10 +9,12 @@ export function isEmailValid(email) {
   return emailRegex.test(email);
 }
 
+export const headers = {
+  Authorization: `Bearer ${getCookies()}`,
+};
+
 export async function fetchData(url) {
   return await axios.get(url, {
-    headers: {
-      Authorization: `Bearer ${getCookies()}`,
-    },
+    headers,
   });
 }

@@ -4,6 +4,7 @@ import Event from "./Event";
 import "./Events.css";
 import { EVENTS_URL } from "../../utils/constants";
 import { fetchData } from "../../utils/functions";
+import { useAuth } from "../../AuthProvider";
 
 /*
 
@@ -30,13 +31,16 @@ import { fetchData } from "../../utils/functions";
   */
 
 export default function Events() {
+  const { currentUser } = useAuth();
   const [events, setEvents] = useState([]);
 
   useEffect(() => {
+    if (events.length) return;
+
     fetchData(EVENTS_URL).then((data) => {
       setEvents(data.data);
     });
-  }, []);
+  }, [currentUser]);
 
   return (
     <div className="event-list">
