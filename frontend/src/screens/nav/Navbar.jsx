@@ -12,7 +12,7 @@ const Navbar = () => {
   return (
     <nav className="NavbarItems">
       <a href="" className="navbar-logo">
-        <img src={Logo}alt="Logo" height={150} />
+        <img src={Logo}alt="Logo" height={105} />
       </a>
 
       <div className="menu-icon" onClick={() => setClicked(!clicked)}>

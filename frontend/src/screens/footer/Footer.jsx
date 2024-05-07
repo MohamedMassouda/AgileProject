@@ -4,13 +4,15 @@ import ReactDOM from 'react-dom'
 import { SocialIcon } from 'react-social-icons'
 import Logo from  "C:/Users/user/OneDrive/Bureau/AGILE/AgileProject/frontend/src/screens/nav/backfree.png";
 import { FaXTwitter } from "react-icons/fa6";
+import Subs from './subs';
 
 
 const Footer = () => {
   return (
+    
     <footer className="footer-distributed">
       <div className="footer-left">
-      <img src={Logo}alt="Logo" height={200} width={200} />  
+      <img src={Logo}alt="Logo" height={200} width={200}  />  
 
         <div className="footer-links">
           <a href="#" className="link-1">Home</a>
@@ -25,16 +27,17 @@ const Footer = () => {
       </div>
 
       <div className="footer-center">
+      <Subs />
         <div>
           <i className="fa fa-map-marker"></i>
           <p>
-            <span>444 S. Cedros Ave</span> Solana Beach, California
+            <span>Hammed al Ghazali street ,</span> Sousse
           </p>
         </div>
 
         <div>
           <i className="fa fa-phone"></i>
-          <p>+1.555.555.5555</p>
+          <p>+216 55 001 002</p>
         </div>
 
         <div>
