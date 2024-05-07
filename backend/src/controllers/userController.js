@@ -68,6 +68,7 @@ export const UserController = {
           events: {
             select: {
               id: true,
+              title: true,
             },
           },
         },
@@ -342,6 +343,8 @@ export const UserController = {
    */
   getUserFromToken(req) {
     const token = getTokenFromHeader(req);
+
+    console.table(req.headers);
 
     if (!token) {
       return [null, "Invalid token"];

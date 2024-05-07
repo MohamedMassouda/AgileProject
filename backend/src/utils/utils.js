@@ -248,10 +248,6 @@ export const resultSelectEvent = {
     },
   },
   attendees: {
-    select: {
-      user: {
-        select: resultSelectUser,
-      },
-    },
+    select: resultSelectUser,
   },
 };

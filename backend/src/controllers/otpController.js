@@ -87,7 +87,7 @@ export const OtpController = {
         },
         getSecretToken(),
         {
-          expiresIn: "1h",
+          expiresIn: "1d",
         },
       );
     } catch (error) {

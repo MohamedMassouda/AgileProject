@@ -88,6 +88,13 @@ export const EventController = {
         where: {
           id: id,
         },
+        include: {
+          attendees: {
+            select: {
+              id: true,
+            },
+          },
+        },
       });
 
       res.json(event);
@@ -279,7 +286,7 @@ export const EventController = {
         select: {
           attendees: {
             where: {
-              userId: req.user.id,
+              id: req.user.id,
             },
           },
         },
@@ -297,7 +304,7 @@ export const EventController = {
         data: {
           attendees: {
             connect: {
-              userId: req.user.id,
+              id: req.user.id,
             },
           },
           attendeeCount: {
@@ -332,7 +339,7 @@ export const EventController = {
         select: {
           attendees: {
             where: {
-              userId: req.user.id,
+              id: req.user.id,
             },
           },
         },
@@ -350,7 +357,7 @@ export const EventController = {
         data: {
           attendees: {
             disconnect: {
-              userId: req.user.id,
+              id: req.user.id,
             },
           },
           attendeeCount: {
