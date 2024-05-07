@@ -11,43 +11,30 @@ const Contacts = () => {
 
   const columns = [
     { field: "id", headerName: "ID", flex: 0.5 },
-    { field: "registrarId", headerName: "Registrar ID" },
     {
-      field: "name",
-      headerName: "Name",
+      field: "title",
+      headerName: "Title",
       flex: 1,
       cellClassName: "name-column--cell",
     },
     {
-      field: "age",
-      headerName: "Age",
-      type: "number",
-      headerAlign: "left",
-      align: "left",
-    },
-    {
-      field: "phone",
-      headerName: "Phone Number",
+      field: "description",
+      headerName: "Description",
       flex: 1,
     },
     {
-      field: "email",
-      headerName: "Email",
+      field: "category",
+      headerName: "Category",
       flex: 1,
     },
     {
-      field: "address",
-      headerName: "Address",
+      field: "location",
+      headerName: "Location",
       flex: 1,
     },
     {
-      field: "city",
-      headerName: "City",
-      flex: 1,
-    },
-    {
-      field: "zipCode",
-      headerName: "Zip Code",
+      field: "date",
+      headerName: "Date",
       flex: 1,
     },
   ];
@@ -55,8 +42,8 @@ const Contacts = () => {
   return (
     <Box m="20px">
       <Header
-        title="CONTACTS"
-        subtitle="List of Contacts for Future Reference"
+        title="Event List"
+        subtitle="List of Events you have already approved"
       />
       <Box
         m="40px 0 0 0"

@@ -1,9 +1,11 @@
 import * as React from 'react';
 import Box from '@mui/material/Box';
 import TextField from '@mui/material/TextField';
+import "./Blog.css";
 
 export default function TextFields() {
   return (
+    <div className='blog'>
     <Box
       component="form"
       sx={{
@@ -13,7 +15,9 @@ export default function TextFields() {
       autoComplete="off"
     >
       <TextField label="Title" color="secondary" focused cla/>
-      <TextField label="Content" variant="filled" color="success" focused />
+      <br />
+      <TextField label="Content" variant="filled" color="success" focused width="100px" />
     </Box>
+    </div>
   );
 }

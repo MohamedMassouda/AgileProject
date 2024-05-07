@@ -133,6 +133,8 @@
 .footer-distributed .footer-right{
 	width: 20%;
 	margin-top: 125px;
+	margin: auto;
+	margin-top: 35px;
 }
 
 .footer-distributed .footer-company-about{
@@ -140,7 +142,7 @@
 	color:  #92999f;
 	font-size: 13px;
 	font-weight: normal;
-	margin: 0;
+	margin-bottom: 10px;
 }
 
 .footer-distributed .footer-company-about span{

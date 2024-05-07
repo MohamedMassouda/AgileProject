@@ -18,6 +18,7 @@ import MenuOutlinedIcon from "@mui/icons-material/MenuOutlined";
 import MapOutlinedIcon from "@mui/icons-material/MapOutlined";
 import EventIcon from "@mui/icons-material/Event";
 import NewspaperIcon from '@mui/icons-material/Newspaper';
+import EventNoteIcon from '@mui/icons-material/EventNote';
 
 const Item = ({ title, to, icon, selected, setSelected }) => {
   const theme = useTheme();
@@ -142,16 +143,9 @@ const Sidebar = () => {
               setSelected={setSelected}
             />
             <Item
-              title="Contacts Information"
+              title="Events list"
               to="/contacts"
-              icon={<ContactsOutlinedIcon />}
-              selected={selected}
-              setSelected={setSelected}
-            />
-            <Item
-              title="Invoices Balances"
-              to="/invoices"
-              icon={<ReceiptOutlinedIcon />}
+              icon={<EventNoteIcon />}
               selected={selected}
               setSelected={setSelected}
             />
@@ -230,6 +224,13 @@ const Sidebar = () => {
             <Item
               title="Geography Chart"
               to="/geography"
+              icon={<MapOutlinedIcon />}
+              selected={selected}
+              setSelected={setSelected}
+            />
+            <Item
+              title="EXIT"
+              to="/exit"
               icon={<MapOutlinedIcon />}
               selected={selected}
               setSelected={setSelected}

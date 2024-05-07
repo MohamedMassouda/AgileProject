@@ -49,8 +49,7 @@ const Footer = () => {
       <div className="footer-right">
         <p className="footer-company-about">
           <span>About the company</span>
-          Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce euismod convallis velit, eu auctor lacus vehicula sit amet.
-        </p>
+          Discover endless events with Go Out. Our platform connects you to the best experiences, from concerts to cultural gatherings. Subscribe for easy access to all the excitement.        </p>
 
         <div className="footer-icons">
           <SocialIcon url="http://www.x.com/" />

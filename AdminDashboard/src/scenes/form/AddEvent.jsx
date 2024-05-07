@@ -7,6 +7,9 @@ import MultipleSelectCheckmarks from "../../components/CategorySelec";
 import { addMember, mockDataTeam } from "../../data/mockData";
 import StaticDateTimePickerLandscape from "../../components/DateTime";
 
+
+
+
 const AddEvent = () => {
   const isNonMobile = useMediaQuery("(min-width:600px)");
 
