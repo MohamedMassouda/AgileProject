@@ -15,7 +15,7 @@ function App() {
         <Route path="/register" element={<SignUp />} />
         <Route path="/footer" element={<Footer />} />
         <Route path="/badge" element={<Badge />} />
-        <Route path="/confirmation" element={<OTPPage numberOfDigits={6} />} />
+        <Route path="/confirmation" element={<OTPPage />} />
       </Routes>
     </BrowserRouter>
   );
