@@ -1,24 +1,19 @@
 @import url(https://fonts.googleapis.com/css?family=Open+Sans:400,500,300,700);
 
-* {
+/* {
   font-family: Open Sans;
-}
+}*/
 
 .footer-distributed {
-  background: #666;
+  background: linear-gradient(-90deg, #f54d42 50%, rgba(73, 63, 252, 1) 100%);
   box-shadow: 0 1px 1px 0 rgba(0, 0, 0, 0.12);
   box-sizing: border-box;
+  width: 100%;
   text-align: left;
   font: bold 16px sans-serif;
   padding: 55px 50px;
-  width: 100%;
-  display: inline-block;
-  background: #333;
-  height: 50vh;
-  text-align: center;
-  font-size: 22px;
-  font-weight: 700;
-  text-decoration: underline;
+  margin-top: 100%;
+  height: 365px;
 }
 
 .footer-distributed .footer-left,
@@ -65,7 +60,7 @@
 }
 
 .footer-distributed .footer-company-name {
-  color: #222;
+  color: #c9adad;
   font-size: 14px;
   font-weight: normal;
   margin: 0;
@@ -133,6 +128,7 @@
 
 .footer-distributed .footer-right {
   width: 20%;
+  margin-top: 125px;
 }
 
 .footer-distributed .footer-company-about {
@@ -190,4 +186,24 @@
   .footer-distributed .footer-center i {
     margin-left: 0;
   }
+}
+
+.btn-nws {
+  color: #001f3f;
+  width: 140px;
+  height: 30px;
+  background: #3d7ab8;
+  border-radius: 10px;
+  margin-top: 10px;
+  margin-left: 120px;
+  border: solid 1px black;
+  margin-bottom: 70px;
+}
+
+input {
+  color: #000000;
+  width: 380px;
+  height: 30px;
+  border-radius: 30px;
+  border: solid 1px black;
 }

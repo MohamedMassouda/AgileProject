@@ -1,50 +1,36 @@
-import React from "react";
+import React, { useState } from "react";
+import { MenuItems } from "./MenuItems";
+import Button from "./Button.jsx";
 import "./Navbar.css";
+import Logo from "./backfree.png";
+import { AiOutlineMenu, AiOutlineClose } from "react-icons/ai";
 
-function Navbar() {
+const Navbar = () => {
+  const [clicked, setClicked] = useState(false);
+
   return (
-    <nav className="navbar">
-      <div className="video-logo">
-        <img
-          src="https://horizontech.tn/static/media/logo.3e37e3f2.png"
-          alt="Avatar"
-          className="rounded-circle shadow-4"
-          style={{ width: "50px" }}
-        />
-      </div>
-      <div>
-        <img
-          src="https://qph.cf2.quoracdn.net/main-qimg-e981687f230a245c7e38c00112d3851a"
-          alt="Avatar"
-          className="rounded-circle shadow-4"
-          style={{ width: "100px" }}
-        />
+    <nav className="NavbarItems">
+      <a href="" className="navbar-logo">
+        <img src={Logo} alt="Logo" height={80} />
+      </a>
 
-        <img
-          src="https://upload.wikimedia.org/wikipedia/commons/thumb/c/ce/Flag_of_Tunisia.svg/langfr-1920px-Flag_of_Tunisia.svg.png"
-          alt="Avatar"
-          className="rounded-circle shadow-4"
-          style={{ width: "75px", marginLeft: "10px" }}
-        />
+      <div className="menu-icon" onClick={() => setClicked(!clicked)}>
+        {clicked ? <AiOutlineClose /> : <AiOutlineMenu />}
       </div>
-      <div className="avatar-container">
-        <img
-          src="https://mdbcdn.b-cdn.net/img/new/avatars/1.webp"
-          alt="Avatar"
-          className="rounded-circle shadow-4"
-          style={{ width: "50px" }}
-        />
-        <div className="avatar-info">
-          <h5 className="mb-2">
-            <strong>LOCO Monarch</strong>
-          </h5>
-          <p className="text-muted">
-            Web designer <span className="badge bg-primary">PRO</span>
-          </p>
-        </div>
-      </div>
+      <ul className={clicked ? "nav-menu active" : "nav-menu"}>
+        {MenuItems.map((item, index) => {
+          return (
+            <li key={index}>
+              <a href={item.url} className={item.cName}>
+                {item.title}
+              </a>
+            </li>
+          );
+        })}
+      </ul>
+      <Button>Sign Up</Button>
     </nav>
   );
-}
+};
 
 export default Navbar;

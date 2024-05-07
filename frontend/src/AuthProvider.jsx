@@ -1,3 +1,4 @@
+import React from "react";
 import { createClient } from "@supabase/supabase-js";
 import axios from "axios";
 import { createContext, useContext, useEffect, useState } from "react";

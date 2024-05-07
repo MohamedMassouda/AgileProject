@@ -1,14 +1,14 @@
 import React from "react";
 import "./Footer.css";
 import { SocialIcon } from "react-social-icons";
+import Logo from "../Navbar/backfree.png";
+import Subs from "./Subs";
 
 const Footer = () => {
   return (
     <footer className="footer-distributed">
       <div className="footer-left">
-        <h3>
-          Company<span>logo</span>
-        </h3>
+        <img src={Logo} alt="Logo" height={200} width={200} />
 
         <div className="footer-links">
           <a href="#" className="link-1">
@@ -21,26 +21,31 @@ const Footer = () => {
           <a href="#">Contact</a>
         </div>
 
-        <p className="footer-company-name">Company Name © 2015</p>
+        <p className="footer-company-name">
+          Horizon School Of DigitAI Technologies © 2024
+        </p>
       </div>
 
       <div className="footer-center">
+        <Subs />
         <div>
           <i className="fa fa-map-marker"></i>
           <p>
-            <span>444 S. Cedros Ave</span> Solana Beach, California
+            <span>Hammed al Ghazali street ,</span> Sousse
           </p>
         </div>
 
         <div>
           <i className="fa fa-phone"></i>
-          <p>+1.555.555.5555</p>
+          <p>+216 55 001 002</p>
         </div>
 
         <div>
           <i className="fa fa-envelope"></i>
           <p>
-            <a href="mailto:support@company.com">support@company.com</a>
+            <a href="mailto:ahmed.massoudi@horizon-tech.tn">
+              Contact-GoOut@horizon-tech.tn
+            </a>
           </p>
         </div>
       </div>
@@ -53,7 +58,7 @@ const Footer = () => {
         </p>
 
         <div className="footer-icons">
-          <SocialIcon url="https://twitter.com" />
+          <SocialIcon url="http://www.x.com/" />
           <SocialIcon url="www.facebook.com" />
           <SocialIcon url="https://github.com" />
           <SocialIcon url="https://www.instagram.com" />
@@ -64,4 +69,3 @@ const Footer = () => {
 };
 
 export default Footer;
-
