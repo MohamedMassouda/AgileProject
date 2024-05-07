@@ -1,0 +1,49 @@
+.otp-page {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 20px;
+  background-color: #001F3F;
+  border: 5px solid #556B2F;
+  border-radius: 10px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  color: #daa520;
+  width: 800px;
+  height: 300px;
+  
+}
+
+.otp-input {
+  width: 60px;
+  height: 40px;
+  margin: 10px;
+  padding: 10px;
+  font-size: 24px;
+  text-align: left;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+}
+
+.otp-input:focus {
+  border-color: #aaa;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.error {
+  color: red;
+  font-size: 14px;
+  margin-top: 10px;
+}
+
+.submit-btn {
+  background-color: #4CAF50;
+  color: #fff;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.submit-btn:hover {
+  background-color: #3e8e41;
+}

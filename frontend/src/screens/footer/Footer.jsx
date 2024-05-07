@@ -2,7 +2,7 @@ import React from 'react';
 import './footer.css';
 import ReactDOM from 'react-dom'
 import { SocialIcon } from 'react-social-icons'
-import Logo from  "C:/Users/user/OneDrive/Bureau/AGILE/AgileProject/frontend/src/screens/nav/backfree.png";
+import Logo from "../nav/backfree.png"  ;
 import { FaXTwitter } from "react-icons/fa6";
 import Subs from './subs';
 

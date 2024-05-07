@@ -7,7 +7,11 @@
 
 
 .footer-distributed{
-	background: #001F3F;
+	background: linear-gradient(
+    -90deg,
+    #001F3F 0%,
+    rgba(73, 63, 252, 1) 100%
+  );
 	box-shadow: 0 1px 1px 0 rgba(0, 0, 0, 0.12);
 	box-sizing: border-box;
 	width: 100%;
